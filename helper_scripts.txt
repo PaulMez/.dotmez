@@ -1,0 +1,7 @@
+cp ~/.bashrc ./macos/.bashrc
+cp ~/.zshrc ./macos/.zshrc
+cp ~/.p10k.zsh ./macos/.p10k.zsh
+
+cp ~/.bashrc ./ubuntuDesktop/.bashrc
+cp ~/.zshrc ./ubuntuDesktop/.zshrc
+cp ~/.p10k.zsh ./ubuntuDesktop/.p10k.zsh
