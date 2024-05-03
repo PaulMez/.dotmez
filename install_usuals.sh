@@ -27,50 +27,61 @@ MezPrintCen "[--------------------------------------------]"
 MezPrint "Installing Requirements..." 
 
 
-MezPrint "Installing The Usual Suspects..." 
+# MezPrint "Installing The Usual Suspects..." 
 
-for i in $(seq 1 4); do
-   echo -ne "\rProgress 1: $i/4"
-   sleep 1
-done
-echo # Move to the next line
-for x in $(seq 1 4); do
-   echo -ne "\rProgress 2: $x/4"
-   sleep 1
-done
+# for i in $(seq 1 4); do
+#    echo -ne "\rProgress 1: $i/4"
+#    sleep 1
+# done
+# echo # Move to the next line
+# for x in $(seq 1 4); do
+#    echo -ne "\rProgress 2: $x/4"
+#    sleep 1
+# done
 
 
-echo "Choose an option:"
-select option in "Option 1" "Option 2" "Exit"; do
-   case $option in
-      "Option 1")
-         echo "You chose Option 1"
-         ;;
-      "Option 2")
-         echo "You chose Option 2"
-         ;;
-      "Exit")
-         break
-         ;;
-      *)
-         echo "Invalid option"
-         ;;
-   esac
-done
+# echo "Choose an option:"
+# select option in "Option 1" "Option 2" "Exit"; do
+#    case $option in
+#       "Option 1")
+#          echo "You chose Option 1"
+#          ;;
+#       "Option 2")
+#          echo "You chose Option 2"
+#          ;;
+#       "Exit")
+#          break
+#          ;;
+#       *)
+#          echo "Invalid option"
+#          ;;
+#    esac
+# done
 
 # #update first
 # MezPrint "Updating apt"
 # sudo apt-get update
 
 # Dependencies & Common Apps
-declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
+declare -a Reqs=("wget" "zsh" "curl" "git") # "unzip" "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
 arraylength=${#Reqs[@]}
 
-# for (( i=0; i<${arraylength}; i++ ));
-# do
-#   echo -e "${MezBack}$i. ${Reqs[$i]}${reset}"
-#   eval "sudo apt install ${Reqs[$i]} -yy"
-# done
+for (( i=0; i<${arraylength}; i++ ));
+do
+  echo -e "${MezBack}$i. ${Reqs[$i]}${reset}"
+  
+  # Check if sudo is required for installation
+  if sudo -n true &>/dev/null; then
+    eval "sudo apt install ${Reqs[$i]} -yy"
+  else
+    echo "sudo password required for installation of ${Reqs[$i]}"
+    sudo apt install ${Reqs[$i]} -yy
+  fi
+done
+
+#.dotmez
+MezPrint "Installing .dotmez"
+git clone --depth=1 https://github.com/PaulMez/.dotmez.git ~/.dotmez
 
 #Nerd Fonts
 MezPrint "Installing Nerd Fonts (FiraCode)"
@@ -79,7 +90,16 @@ unzip FiraCode.zip -d ~/.fonts
 rm FiraCode.zip
 fc-cache -fv
 
+
+# Install Oh-my-zsh
+# TBC
+
 # #Powerlevel10k
 MezPrint "Installing Powerlevel10k"
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
-# # echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc May not need due to config copy anyway
+# # echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc May not need due to config copy anyway / depends on omyzsh
+
+
+# Copy .dotmez files
+MezPrint "copying .dotmez configs"
+#run copy_configs.sh
