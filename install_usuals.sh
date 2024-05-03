@@ -109,3 +109,6 @@ MezPrint "Copying .dotmez configs"
 ~/.dotmez/copy_configs.sh
 
 
+source ~/.zshrc
+
+# zsh
