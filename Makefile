@@ -8,6 +8,7 @@ all: build run
 
 full:
 	reset-docker build run
+	
 # Build the Docker image
 build:
 	docker build -t $(DOCKER_IMAGE_NAME) .

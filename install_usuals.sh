@@ -1,5 +1,5 @@
 #!/bin/bash
-#bash -c "$(curl -H 'Cache-Control: no-cache' -fsSL https://raw.githubusercontent.com/thisifle.sh)"
+#bash -c "$(curl -H 'Cache-Control: no-cache' -fsSL https://raw.githubusercontent.com/PaulMez/.dotmez/main/install_usuals.sh)"
 
 
 #FuncColors
