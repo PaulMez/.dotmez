@@ -62,9 +62,9 @@ done
 # MezPrint "Updating apt"
 # sudo apt-get update
 
-# # Dependencies & Common Apps
-# declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
-# arraylength=${#Reqs[@]}
+# Dependencies & Common Apps
+declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
+arraylength=${#Reqs[@]}
 
 # for (( i=0; i<${arraylength}; i++ ));
 # do
@@ -72,14 +72,14 @@ done
 #   eval "sudo apt install ${Reqs[$i]} -yy"
 # done
 
-# #Nerd Fonts
-# MezPrint "Installing Nerd Fonts (FiraCode)"
-# wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/FiraCode.zip
-# unzip FiraCode.zip -d ~/.fonts
-# rm FiraCode.zip
-# fc-cache -fv
+#Nerd Fonts
+MezPrint "Installing Nerd Fonts (FiraCode)"
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/FiraCode.zip
+unzip FiraCode.zip -d ~/.fonts
+rm FiraCode.zip
+fc-cache -fv
 
 # #Powerlevel10k
-# MezPrint "Installing Powerlevel10k"
-# git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+MezPrint "Installing Powerlevel10k"
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 # # echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc May not need due to config copy anyway
