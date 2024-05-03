@@ -4,6 +4,9 @@ ls etc alias
 - other oh mmy zsh plugins
 - other vscodes?
 
+git colour change
+ls colour change
+
 
 #this needs testing in zshrc
 if ! shopt -oq posix; then
@@ -13,3 +16,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+
+

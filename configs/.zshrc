@@ -17,8 +17,8 @@ cat() {
     }
 }
 
-alias ls='ls -lahG --color=auto'
-alias ll='ls -ahG --color=auto'
+alias ls='ls --color=auto'
+alias ll='ls -lahG --color=auto'
 alias tt="cd ~/aws/tinytales/"
 alias ttf="cd ~/aws/tinytales/tinytales_frontend/"
 alias ttb="cd ~/aws/tinytales/tinytales_backend"
@@ -32,6 +32,35 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 alias md='mkdir -p'
 alias rd=rmdir
+
+
+# Add or update LS_COLORS settings directly
+update_ls_colors() {
+    # Define new color settings
+    local new_colors=(
+        "DIR=01;34;40"  # directory
+        "STICKY_OTHER_WRITABLE=01;34;40"  # dir that is sticky and other-writable (+t,o+w)
+        "OTHER_WRITABLE=01;34;40"  # dir that is other-writable (o+w) and not sticky
+        "STICKY=01;34;40"  # dir with the sticky bit set (+t) and not other-writable
+        "*.sh=01;38;5;200;48;5;235"  # custom color for .sh scripts
+        "*.py=01;38;5;165;48;5;235"  # custom color for .py scripts
+    )
+    # Start with existing LS_COLORS or initialize a new one
+    local current_ls_colors="${LS_COLORS:-}"
+    # Update or add new color settings
+    for color_setting in "${new_colors[@]}"; do
+        local key="${color_setting%%=*}"
+        local value="${color_setting#*=}"
+        # Remove existing setting if present
+        current_ls_colors=$(echo "${current_ls_colors}" | sed "s|${key}=[^:]*:||g")
+        # Append the new setting
+        current_ls_colors="${current_ls_colors}${key}=${value}:"
+    done
+    # Export the updated LS_COLORS
+    export LS_COLORS="${current_ls_colors}"
+}
+# Call the function to update LS_COLORS
+update_ls_colors
 
 
 
@@ -54,7 +83,7 @@ setopt hist_ignore_dups hist_ignore_all_dups
 
 
 set_ohmyzsh_backg_color() {
-    local colors=('4' 'purple' 'pink' 'yellow')
+    local colors=('014' '164' '056' '128')
     echo ${colors[$RANDOM % ${#colors[@]}]}
 }
 

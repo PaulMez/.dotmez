@@ -216,7 +216,7 @@
   ##################################[ dir: current directory ]##################################
   # Current directory background color.
   # typeset -g POWERLEVEL9K_DIR_BACKGROUND=4
-  typeset -g POWERLEVEL9K_DIR_BACKGROUND=$(set_random_color)
+  typeset -g POWERLEVEL9K_DIR_BACKGROUND=$(set_ohmyzsh_backg_color)
 
   # Default current directory foreground color.
   typeset -g POWERLEVEL9K_DIR_FOREGROUND=254
@@ -357,9 +357,9 @@
   #####################################[ vcs: git status ]######################################
   # Version control background colors.
   typeset -g POWERLEVEL9K_VCS_CLEAN_BACKGROUND=2
-  typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=3
+  typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=13
   typeset -g POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=2
-  typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=3
+  typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=9
   typeset -g POWERLEVEL9K_VCS_LOADING_BACKGROUND=8
 
   # Branch icon. Set this parameter to '\UE0A0 ' for the popular Powerline branch icon.
@@ -391,6 +391,7 @@
     local       meta='%7F' # white foreground
     local      clean='%0F' # black foreground
     local   modified='%0F' # black foreground
+    # local  modified='%13F'  # yellow foreground (color 13)
     local  untracked='%0F' # black foreground
     local conflicted='%1F' # red foreground
 
