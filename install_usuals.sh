@@ -101,7 +101,7 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 
 # Backing up files
 MezPrint "Backing up configs"
-~/.dotmez/backup_configs.sh
+sudo ~/.dotmez/backup_configs.sh
 
 
 # Copy .dotmez files

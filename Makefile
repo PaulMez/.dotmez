@@ -6,7 +6,7 @@ RDP_PORT = 3389
 # Default target to build and run Docker container
 all: build run
 
-retest:	reset-docker run ssh
+retest:	reset-docker run
 	
 # Build the Docker image
 build:
