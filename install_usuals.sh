@@ -28,13 +28,13 @@ MezPrint "Installing Requirements..."
 
 
 
-MezPrint       _       _                      
-MezPrint      | |     | |                     
-MezPrint    __| | ___ | |_ _ __ ___   ___ ____
-MezPrint   / _` |/ _ \| __| '_ ` _ \ / _ \_  /
-MezPrint  | (_| | (_) | |_| | | | | |  __// / 
-MezPrint (_)__,_|\___/ \__|_| |_| |_|\___/___|
-MezPrint                                      
+MezPrint "       _       _                       "
+MezPrint "      | |     | |                      "
+MezPrint "    __| | ___ | |_ _ __ ___   ___ ____ "
+MezPrint "   / _` |/ _ \| __| '_ ` _ \ / _ \_  / "
+MezPrint "  | (_| | (_) | |_| | | | | |  __// /  "
+MezPrint " (_)__,_|\___/ \__|_| |_| |_|\___/___| "
+MezPrint "                                       "
                                       
 
 # MezPrint "Installing The Usual Suspects..." 
