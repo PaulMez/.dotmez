@@ -147,33 +147,48 @@ INSTALL_DIR="/usr/local/bin"
 if ! command -v curl &> /dev/null || ! command -v tar &> /dev/null; then
     echo "curl and tar are required to run this script."
     failedInstalls+=("zellij-dependencies")
-else
-    OS_TYPE=$(uname -s)
-    case "$OS_TYPE" in
-        Linux)  BINARY_URL="https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz";;
-        Darwin) BINARY_URL="https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-apple-darwin.tar.gz";;
-        *)      echo "Unsupported OS: $OS_TYPE"
-                failedInstalls+=("zellij-unsupported-os")
-                exit 1
-                ;;
+    exit 1
+fi
+OS_TYPE=$(uname -s)
+case "$OS_TYPE" in
+    Linux)  BINARY_URL="https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz";;
+    Darwin) BINARY_URL="https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-apple-darwin.tar.gz";;
+    *)      echo "Unsupported OS: $OS_TYPE"
+            failedInstalls+=("zellij-unsupported-os")
+            exit 1
+            ;;
+esac
+echo "Downloading Zellij for $OS_TYPE..."
+curl -L $BINARY_URL -o zellij.tar.gz
+if [ $? -eq 0 ]; then
+    user_type=$(check_superuser)
+    case $user_type in
+        "root")
+            tar -xzf zellij.tar.gz -C "$INSTALL_DIR"
+            ;;
+        "superuser"|"normal_user")
+            sudo tar -xzf zellij.tar.gz -C "$INSTALL_DIR"
+            ;;
     esac
-    echo "Downloading Zellij for $OS_TYPE..."
-    curl -L $BINARY_URL -o zellij.tar.gz
-    if [ $? -eq 0 ]; then
-        sudo tar -xzf zellij.tar.gz -C "$INSTALL_DIR"
-        rm zellij.tar.gz
-        sudo chmod +x "$INSTALL_DIR/zellij"
-        if ! command -v zellij &> /dev/null; then
-            echo "Zellij installation failed."
-            failedInstalls+=("zellij")
-        else
-            echo "Zellij installed successfully!"
-            zellij --version
-        fi
+    rm zellij.tar.gz
+    case $user_type in
+        "root")
+            chmod +x "$INSTALL_DIR/zellij"
+            ;;
+        "superuser"|"normal_user")
+            sudo chmod +x "$INSTALL_DIR/zellij"
+            ;;
+    esac
+    if ! command -v zellij &> /dev/null; then
+        echo "Zellij installation failed."
+        failedInstalls+=("zellij")
     else
-        echo "Failed to download Zellij (from Binary)."
-        failedInstalls+=("zellij-download")
+        echo "Zellij installed successfully!"
+        zellij --version
     fi
+else
+    echo "Failed to download Zellij (from Binary)."
+    failedInstalls+=("zellij-download")
 fi
 
 
