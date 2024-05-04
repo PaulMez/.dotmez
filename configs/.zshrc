@@ -8,7 +8,11 @@ fi
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 # Need oh-my-zsh first
-plugins=(git)
+plugins=(
+  zsh-syntax-highlighting 
+  zsh-autosuggestions
+  z
+)
 source $HOME/.oh-my-zsh/oh-my-zsh.sh
 
 function gitcap() {
