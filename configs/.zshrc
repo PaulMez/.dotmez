@@ -23,8 +23,9 @@ cat() {
         # If not installed, show a message and fall back to default cat
         echo "batcat is not installed. Falling back to default cat command."
         command cat "$@"
-    }
 }
+
+
 
 ## SAME FOR BTOP
 

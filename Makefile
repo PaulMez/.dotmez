@@ -6,7 +6,7 @@ RDP_PORT = 3389
 # Default target to build and run Docker container
 all: build run
 
-retest: reset-docker run sleep 5 ssh
+retest: reset-docker run sleeper ssh
 	
 # Build the Docker image
 build:
@@ -20,6 +20,10 @@ run-without-rdp:
 run:
 	@echo "Running with SSH and RDP..."
 	docker run -d --name $(DOCKER_IMAGE_NAME) -p $(SSH_PORT):22 -p $(RDP_PORT):$(RDP_PORT) $(DOCKER_IMAGE_NAME)
+
+# SSH into the Docker container
+sleeper:
+	sleep 3
 
 # SSH into the Docker container
 ssh:

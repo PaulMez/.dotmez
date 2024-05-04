@@ -135,4 +135,4 @@ chmod +x ~/.dotmez/copy_configs.sh
 
 
 
-# zsh
+zsh
