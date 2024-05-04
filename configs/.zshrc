@@ -14,7 +14,7 @@ function gitcap() {
   git add . && git commit -m "$1" && git push
 }
 
-cat() {
+function cat() {
     # Check if batcat is installed
     if command -v batcat &> /dev/null; then
         # If installed, use batcat with all provided arguments
@@ -23,6 +23,7 @@ cat() {
         # If not installed, show a message and fall back to default cat
         echo "batcat is not installed. Falling back to default cat command."
         command cat "$@"
+    fi
 }
 
 
@@ -99,9 +100,9 @@ set_ohmyzsh_backg_color() {
     local colors=('014' '164' '056' '128')
     echo ${colors[$RANDOM % ${#colors[@]}]}
 }
-
+    
 # Call the function
-set_ohmyzsh_backg_color
+# set_ohmyzsh_backg_color
 
 
 
