@@ -99,7 +99,7 @@ MezPrint "Installing Powerlevel10k"
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 # # echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc May not need due to config copy anyway / depends on omyzsh
 
-# Backing up files
+# Backing up files (only if exist?)
 MezPrint "Backing up configs"
 chmod +x  ~/.dotmez/backup_configs.sh
 ~/.dotmez/backup_configs.sh
@@ -107,9 +107,9 @@ chmod +x  ~/.dotmez/backup_configs.sh
 
 # Copy .dotmez files
 MezPrint "Copying .dotmez configs"
+chmod +x ~/.dotmez/copy_configs.sh
 ~/.dotmez/copy_configs.sh
 
 
-source ~/.zshrc
 
 # zsh
