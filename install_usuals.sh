@@ -66,34 +66,40 @@ MezPrint "Installing Requirements..."
 declare -a Reqs=("wget" "zsh" "curl" "git") # "unzip" "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
 arraylength=${#Reqs[@]}
 
-# Function to check if sudo is required
-check_sudo_required() {
-    if command -v apt &>/dev/null; then
-        echo "sudo"
+
+# Function to check if the user is root or superuser
+check_superuser() {
+    if [ "$EUID" -eq 0 ]; then
+        echo "root"
     else
-        echo "no_sudo"
+        sudo -v &>/dev/null
+        if [ $? -eq 0 ]; then
+            echo "superuser"
+        else
+            echo "normal_user"
+        fi
     fi
 }
 
 # Loop through each requirement
 for req in "${Reqs[@]}"; do
     echo "Installing $req..."
-    sudo_required=$(check_sudo_required)
+    user_type=$(check_superuser)
     
-    # Check if sudo is required
-    if [ "$sudo_required" = "sudo" ]; then
-        # Check if sudo is available
-        if sudo -n true &>/dev/null; then
+    # Check user type and install requirement accordingly
+    case $user_type in
+        "root")
+            apt install "$req" -yy
+            ;;
+        "superuser")
             sudo apt install "$req" -yy
-        else
+            ;;
+        "normal_user")
             echo "sudo password required for installation of $req"
             sudo apt install "$req" -yy
-        fi
-    else
-        apt install "$req" -yy
-    fi
+            ;;
+    esac
 done
-
 
 
 #.dotmez
