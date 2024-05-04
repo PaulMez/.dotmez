@@ -44,6 +44,7 @@ ssh-keygen -f "/home/meza/.ssh/known_hosts" -R "[localhost]:2222"
 	- tmux shortcuts
 	- lunavim shortcuts / configs
 	- powerlevel10k config / style
+	- oh my zsh
 	- oh my zsh plugins
 	- make p10k look good and change colour random?
 
