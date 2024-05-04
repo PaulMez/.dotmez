@@ -62,7 +62,7 @@ MezPrint "Installing Requirements..."
 # sudo apt-get update
 
 # Dependencies & Common Apps
-declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa" "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
+declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa" "fontconfig" "screenfetch" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
 arraylength=${#Reqs[@]}
 declare -a failedInstalls  # Array to keep track of failed installations
 
@@ -83,7 +83,7 @@ check_superuser() {
 
 # Loop through each requirement
 for req in "${Reqs[@]}"; do
-    echo "Installing $req..."
+    MezPrint "Installing $req..."
     user_type=$(check_superuser)
     
     # Check user type and install requirement accordingly
@@ -139,6 +139,43 @@ chmod +x  ~/.dotmez/backup_configs.sh
 MezPrint "Copying .dotmez configs"
 chmod +x ~/.dotmez/copy_configs.sh
 ~/.dotmez/copy_configs.sh
+
+
+# Installing Zellij
+MezPrint "Installing Zellij"
+INSTALL_DIR="/usr/local/bin"
+if ! command -v curl &> /dev/null || ! command -v tar &> /dev/null; then
+    echo "curl and tar are required to run this script."
+    failedInstalls+=("zellij-dependencies")
+else
+    OS_TYPE=$(uname -s)
+    case "$OS_TYPE" in
+        Linux)  BINARY_URL="https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz";;
+        Darwin) BINARY_URL="https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-apple-darwin.tar.gz";;
+        *)      echo "Unsupported OS: $OS_TYPE"
+                failedInstalls+=("zellij-unsupported-os")
+                exit 1
+                ;;
+    esac
+    echo "Downloading Zellij for $OS_TYPE..."
+    curl -L $BINARY_URL -o zellij.tar.gz
+    if [ $? -eq 0 ]; then
+        sudo tar -xzf zellij.tar.gz -C "$INSTALL_DIR"
+        rm zellij.tar.gz
+        sudo chmod +x "$INSTALL_DIR/zellij"
+        if ! command -v zellij &> /dev/null; then
+            echo "Zellij installation failed."
+            failedInstalls+=("zellij")
+        else
+            echo "Zellij installed successfully!"
+            zellij --version
+        fi
+    else
+        echo "Failed to download Zellij."
+        failedInstalls+=("zellij-download")
+    fi
+fi
+
 
 
 
