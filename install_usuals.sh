@@ -66,18 +66,35 @@ MezPrint "Installing Requirements..."
 declare -a Reqs=("wget" "zsh" "curl" "git") # "unzip" "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
 arraylength=${#Reqs[@]}
 
-for (( i=0; i<${arraylength}; i++ ));
-do
-  echo -e "${MezBack}$i. ${Reqs[$i]}${reset}"
-  
-  # Check if sudo is required for installation
-  if sudo -n true &>/dev/null; then
-    eval "sudo apt install ${Reqs[$i]} -yy"
-  else
-    echo "sudo password required for installation of ${Reqs[$i]}"
-    sudo apt install ${Reqs[$i]} -yy
-  fi
+# Function to check if sudo is required
+check_sudo_required() {
+    if command -v apt &>/dev/null; then
+        echo "sudo"
+    else
+        echo "no_sudo"
+    fi
+}
+
+# Loop through each requirement
+for req in "${Reqs[@]}"; do
+    echo "Installing $req..."
+    sudo_required=$(check_sudo_required)
+    
+    # Check if sudo is required
+    if [ "$sudo_required" = "sudo" ]; then
+        # Check if sudo is available
+        if sudo -n true &>/dev/null; then
+            sudo apt install "$req" -yy
+        else
+            echo "sudo password required for installation of $req"
+            sudo apt install "$req" -yy
+        fi
+    else
+        apt install "$req" -yy
+    fi
 done
+
+
 
 #.dotmez
 MezPrint "Installing .dotmez"
