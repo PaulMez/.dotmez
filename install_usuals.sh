@@ -62,7 +62,7 @@ MezPrint "Installing Requirements..."
 # sudo apt-get update
 
 # Dependencies & Common Apps
-declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa" "fontconfig" "screenfetch" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
+declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa" "fontconfig" "screenfetch" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf")
 arraylength=${#Reqs[@]}
 declare -a failedInstalls  # Array to keep track of failed installations
 
@@ -142,7 +142,7 @@ chmod +x ~/.dotmez/copy_configs.sh
 
 
 # Installing Zellij
-MezPrint "Installing Zellij"
+MezPrint "Installing Zellij (from Binary)"
 INSTALL_DIR="/usr/local/bin"
 if ! command -v curl &> /dev/null || ! command -v tar &> /dev/null; then
     echo "curl and tar are required to run this script."
@@ -171,7 +171,7 @@ else
             zellij --version
         fi
     else
-        echo "Failed to download Zellij."
+        echo "Failed to download Zellij (from Binary)."
         failedInstalls+=("zellij-download")
     fi
 fi
