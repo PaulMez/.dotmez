@@ -34,19 +34,10 @@ ssh-keygen -f "/home/meza/.ssh/known_hosts" -R "[localhost]:2222"
 
 
 ## config files
-	- alias
-	- .zshrc
-	- Env Vars?
-	- tmux ?
-	- ssh logins
-	- Github deets?
-	- lunavim configs
-	- tmux shortcuts
+	- tmux shortcuts / configs
 	- lunavim shortcuts / configs
-	- powerlevel10k config / style
 	- oh my zsh
 	- oh my zsh plugins
-	- make p10k look good and change colour random?
 
 ## VSCode extensions and settings
 	- check all for extensions (print out list?)

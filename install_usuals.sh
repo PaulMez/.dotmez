@@ -63,8 +63,9 @@ MezPrint "Installing Requirements..."
 # sudo apt-get update
 
 # Dependencies & Common Apps
-declare -a Reqs=("wget" "zsh" "curl" "git") # "unzip" "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
+declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
 arraylength=${#Reqs[@]}
+declare -a failedInstalls  # Array to keep track of failed installations
 
 
 # Function to check if the user is root or superuser
@@ -89,14 +90,14 @@ for req in "${Reqs[@]}"; do
     # Check user type and install requirement accordingly
     case $user_type in
         "root")
-            apt install "$req" -yy
+            apt install "$req" -yy || failedInstalls+=("$req")
             ;;
         "superuser")
-            sudo apt install "$req" -yy
+            sudo apt install "$req" -yy || failedInstalls+=("$req")
             ;;
         "normal_user")
             echo "sudo password required for installation of $req"
-            sudo apt install "$req" -yy
+            sudo apt install "$req" -yy || failedInstalls+=("$req")
             ;;
     esac
 done
@@ -116,6 +117,8 @@ fc-cache -fv
 
 # Install Oh-my-zsh
 # TBC
+MezPrint "Installing Oh-my-zsh"
+sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 # #Powerlevel10k
 MezPrint "Installing Powerlevel10k"
@@ -136,3 +139,11 @@ chmod +x ~/.dotmez/copy_configs.sh
 
 
 zsh
+
+# Check if there are any failed installations and report them
+if [ ${#failedInstalls[@]} -ne 0 ]; then
+    echo "Failed to install the following packages:"
+    for item in "${failedInstalls[@]}"; do
+        echo "$item"
+    done
+fi
