@@ -62,7 +62,7 @@ MezPrint "Installing Requirements..."
 # sudo apt-get update
 
 # Dependencies & Common Apps
-declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa" "fontconfig" "screenfetch" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf")
+declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa" "fontconfig" "nano" "screenfetch" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf")
 arraylength=${#Reqs[@]}
 declare -a failedInstalls  # Array to keep track of failed installations
 
