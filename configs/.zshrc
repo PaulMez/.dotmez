@@ -94,10 +94,15 @@ setopt inc_append_history
 setopt hist_ignore_dups hist_ignore_all_dups
 
 
+# Define the function
 set_ohmyzsh_backg_color() {
     local colors=('014' '164' '056' '128')
     echo ${colors[$RANDOM % ${#colors[@]}]}
 }
+
+# Call the function
+set_ohmyzsh_backg_color
+
 
 
 
