@@ -7,8 +7,9 @@ fi
 
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 
-
-
+# Need oh-my-zsh first
+plugins=(git)
+source $HOME/.oh-my-zsh/oh-my-zsh.sh
 
 function gitcap() {
   git add . && git commit -m "$1" && git push
@@ -30,8 +31,12 @@ function cat() {
 
 ## SAME FOR BTOP
 
-alias ls='ls --color=auto'
-alias ll='ls -lahG --color=auto'
+# alias ls='ls --color=auto'
+alias ls='exa -1lFa --colour=always --icons  --group-directories-first'
+# alias ll='ls -lahG --color=auto'
+alias ll='exa -Fa --colour=always --icons  --group-directories-first'
+alias lt='exa -FTa --colour=always --icons  --group-directories-first'
+
 alias tt="cd ~/aws/tinytales/"
 alias ttf="cd ~/aws/tinytales/tinytales_frontend/"
 alias ttb="cd ~/aws/tinytales/tinytales_backend"

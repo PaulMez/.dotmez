@@ -7,6 +7,7 @@ ls etc alias
 git colour change
 ls colour change
 
+all apps
 
 #this needs testing in zshrc
 if ! shopt -oq posix; then

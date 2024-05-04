@@ -1,7 +1,6 @@
 #!/bin/bash
 #bash -c "$(curl -H 'Cache-Control: no-cache' -fsSL https://raw.githubusercontent.com/PaulMez/.dotmez/main/install_usuals.sh)"
 
-
 #FuncColors
 MezBack='\e[46;30m'
 MezBackW='\e[37;30m'
@@ -63,7 +62,7 @@ MezPrint "Installing Requirements..."
 # sudo apt-get update
 
 # Dependencies & Common Apps
-declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "exa" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
+declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa") # "fontconfig" "screenfetch" "cmatrix" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf" "ZELLIJ")
 arraylength=${#Reqs[@]}
 declare -a failedInstalls  # Array to keep track of failed installations
 
@@ -118,7 +117,7 @@ fc-cache -fv
 # Install Oh-my-zsh
 # TBC
 MezPrint "Installing Oh-my-zsh"
-sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 # #Powerlevel10k
 MezPrint "Installing Powerlevel10k"
