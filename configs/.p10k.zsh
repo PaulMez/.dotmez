@@ -112,6 +112,10 @@
     # example               # example user-defined segment (see prompt_example function below)
   )
 
+  typeset -g POWERLEVEL9K_CONTEXT_REMOTE_SUDO_TEMPLATE="%n@%m"
+  typeset -g POWERLEVEL9K_CONTEXT_REMOTE_TEMPLATE="%n@%m"
+  typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE="%n@%m"
+
   # Defines character set used by powerlevel10k. It's best to let `p10k configure` set it for you.
   typeset -g POWERLEVEL9K_MODE=nerdfont-complete
   # When set to `moderate`, some icons will have an extra space after them. This is meant to avoid
