@@ -111,6 +111,8 @@ setopt extended_history
 setopt inc_append_history
 setopt hist_ignore_dups hist_ignore_all_dups
 
+bindkey ";5A" history-search-backward
+bindkey ";5B" history-search-forward
 
 # Define the function
 set_ohmyzsh_backg_color() {
