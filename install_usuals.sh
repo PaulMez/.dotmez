@@ -187,14 +187,14 @@ if [ $? -eq 0 ]; then
         echo "Zellij installation failed."
         failedInstalls+=("zellij")
     else
-        echo "Zellij installed successfully!"
-        zellij --version
+        mkdir -p ~/.config/zellij && zellij setup --dump-config > ~/.config/zellij/config.kdl && echo 'default_shell "/usr/bin/zsh"' >> ~/.config/zellij/config.kdl
+        # echo "Zellij installed successfully!"
+        # zellij --version
     fi
 else
     echo "Failed to download Zellij (from Binary)."
     failedInstalls+=("zellij-download")
 fi
-
 
 
 
