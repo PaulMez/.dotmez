@@ -36,18 +36,18 @@ clear
 # MezPrint "[--------------------------------------------]"
 MezPrint "Installing......                            "
 # Print each line with different colors to simulate a rainbow
-echo -e "${RED}        _                                    ${RESET}";
-echo -e "${ORANGE}       | |          _                        ${RESET}";
-echo -e "${YELLOW}     __| |  ___   _| |_  ____   _____  _____ ${RESET}";
-echo -e "${GREEN}    / _  | / _ \ (_   _)|    \ | ___ |(___  )${RESET}";
-echo -e "${BLUE} _ ( (_| || |_| |  | |_ | | | || ____| / __/ ${RESET}";
+echo -e "${BLUE}        _                                    ${RESET}";
+echo -e "${BLUE}       | |          _                        ${RESET}";
+echo -e "${BLUE}     __| |  ___   _| |_  ____   _____  _____ ${RESET}";
+echo -e "${BLUE}    / _  | / _ \ (_   _)|    \ | ___ |(___  )${RESET}";
+echo -e "${VIOLET} _ ( (_| || |_| |  | |_ | | | || ____| / __/ ${RESET}";
 echo -e "${INDIGO}(_) \____| \___/    \__)|_|_|_||_____)(_____)${RESET}";
 echo -e "${VIOLET}                                             ${RESET}";
 # MezPrint "[--------------------------------------------]"
 MezPrint "Installing Requirements..." 
 
 
-# exit
+exit
 
                               
 
