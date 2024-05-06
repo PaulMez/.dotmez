@@ -45,7 +45,6 @@ echo -e "${VIOLET} _ ( (_| || |_| |  | |_ | | | || ____| / __/ ${RESET}";
 echo -e "${INDIGO}(_) \____| \___/    \__)|_|_|_||_____)(_____)${RESET}";
 echo -e "${VIOLET}                                             ${RESET}";
 echo -e "${VIOLET}                                             ${RESET}";
-echo -e "${VIOLET}                                             ${RESET}";
 echo -e "${CYAN}_____________________________________________${RESET}";
 # MezPrint "[--------------------------------------------]"
 MezPrint "Installing Requirements..." 
