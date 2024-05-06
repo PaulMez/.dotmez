@@ -10,6 +10,7 @@ reset='\e[0m'
 
 # Define ANSI color codes for the rainbow
 RED="\033[0;31m"
+CYAN="\033[0;36m"
 ORANGE="\033[0;33m"
 YELLOW="\033[0;93m" # Light yellow
 GREEN="\033[0;32m"
