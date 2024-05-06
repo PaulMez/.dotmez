@@ -50,7 +50,7 @@ echo -e "${CYAN}_____________________________________________${RESET}";
 MezPrint "Installing Requirements..." 
 
 
-exit
+# exit
 
                               
 
