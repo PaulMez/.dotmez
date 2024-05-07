@@ -47,7 +47,7 @@ echo -e "${VIOLET}                                             ${RESET}";
 echo -e "${VIOLET}                                             ${RESET}";
 echo -e "${CYAN}_____________________________________________${RESET}";
 # MezPrint "[--------------------------------------------]"
-MezPrint "Installing Requirements..." 
+# MezPrint "Installing Requirements..." 
 
 
 # exit
@@ -89,6 +89,11 @@ MezPrint "Installing Requirements..."
 # MezPrint "Updating apt"
 # sudo apt-get update
 
+
+# Checkout https://github.com/joouha/euporie       Jupyter
+# Checkout https://github.com/tconbeer/harlequin   SQL IDE
+
+MezPrint "Installing The Usual Suspects..."
 # Dependencies & Common Apps
 declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa" "fontconfig" "nano" "screenfetch" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "ranger" "fzf")
 arraylength=${#Reqs[@]}
