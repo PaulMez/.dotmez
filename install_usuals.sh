@@ -226,8 +226,23 @@ else
 fi
 
 
+chsh -s $(which zsh)
+
 
 zsh
+
+echo -e "${BLUE}        _                                    ${RESET}";
+echo -e "${BLUE}       | |          _                        ${RESET}";
+echo -e "${BLUE}     __| |  ___   _| |_  ____   _____  _____ ${RESET}";
+echo -e "${BLUE}    / _  | / _ \ (_   _)|    \ | ___ |(___  )${RESET}";
+echo -e "${VIOLET} _ ( (_| || |_| |  | |_ | | | || ____| / __/ ${RESET}";
+echo -e "${INDIGO}(_) \____| \___/    \__)|_|_|_||_____)(_____)${RESET}";
+echo -e "${VIOLET}                                             ${RESET}";
+echo -e "${VIOLET}                                             ${RESET}";
+echo -e "${CYAN}_____________________________________________${RESET}";
+# MezPrint "[--------------------------------------------]"
+MezPrint "Installation has been completed" 
+
 
 # Check if there are any failed installations and report them
 if [ ${#failedInstalls[@]} -ne 0 ]; then
