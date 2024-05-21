@@ -54,6 +54,8 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 alias md='mkdir -p'
 alias rd=rmdir
+#sudo du -h --max-depth=1 /usr/share/ | sort -hr | head -n 10
+
 
 
 # # Add or update LS_COLORS settings directly
