@@ -99,6 +99,7 @@ declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa" "fontconfig" "nano" "s
 arraylength=${#Reqs[@]}
 declare -a failedInstalls  # Array to keep track of failed installations
 
+# Harlequin
 
 # Function to check if the user is root or superuser
 check_superuser() {
