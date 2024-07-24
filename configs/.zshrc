@@ -54,6 +54,7 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 alias md='mkdir -p'
 alias rd=rmdir
+alias cc=clear
 #sudo du -h --max-depth=1 /usr/share/ | sort -hr | head -n 10
 
 
