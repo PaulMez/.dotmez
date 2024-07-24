@@ -36,10 +36,10 @@ function cat() {
 ## SAME FOR BTOP
 
 # alias ls='ls --color=auto'
-alias ls='exa -1lFa --colour=always --icons  --group-directories-first'
+alias ls='exa -1la --colour=always --icons  --group-directories-first'
 # alias ll='ls -lahG --color=auto'
-alias ll='exa -Fa --colour=always --icons  --group-directories-first'
-alias lt='exa -FTa --colour=always --icons  --group-directories-first'
+alias ll='exa -a --colour=always --icons  --group-directories-first'
+alias lt='exa -Ta --colour=always --icons  --group-directories-first'
 
 alias tt="cd ~/aws/tinytales/"
 alias ttf="cd ~/aws/tinytales/tinytales_frontend/"
