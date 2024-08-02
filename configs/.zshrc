@@ -40,6 +40,7 @@ alias ls='exa -1la --colour=always --icons  --group-directories-first'
 # alias ll='ls -lahG --color=auto'
 alias ll='exa -a --colour=always --icons  --group-directories-first'
 alias lt='exa -Ta --colour=always --icons  --group-directories-first'
+alias ltt='exa -T --colour=always --icons  --group-directories-first'
 
 alias tt="cd ~/aws/tinytales/"
 alias ttf="cd ~/aws/tinytales/tinytales_frontend/"
