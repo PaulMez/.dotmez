@@ -95,7 +95,7 @@ echo -e "${CYAN}_____________________________________________${RESET}";
 
 MezPrint "Installing The Usual Suspects..."
 # Dependencies & Common Apps
-declare -a Reqs=("wget" "zsh" "curl" "git" "unzip"  "exa" "fontconfig" "nano" "screenfetch" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "lazydocker" "ranger" "fzf")
+declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "nano" "screenfetch" "gawk" "htop" "rmlint" "ncdu" "gdu" "btop" "bat" "lazydocker" "ranger" "fzf")
 arraylength=${#Reqs[@]}
 declare -a failedInstalls  # Array to keep track of failed installations
 
@@ -135,6 +135,15 @@ for req in "${Reqs[@]}"; do
     esac
 done
 
+#exa (new way)
+MezPrint "Installing exa"
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source $HOME/.cargo/env
+git clone https://github.com/ogham/exa.git
+cd exa
+cargo install --path .
+exa --version
+cd ~
 
 #.dotmez
 MezPrint "Installing .dotmez"
