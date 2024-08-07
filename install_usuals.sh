@@ -86,8 +86,9 @@ echo -e "${CYAN}_____________________________________________${RESET}";
 # done
 
 # #update first
-# MezPrint "Updating apt"
-# sudo apt-get update
+MezPrint "Updating apt"
+sudo apt update -y
+sudo apt upgrade -y
 
 
 # Checkout https://github.com/joouha/euporie       Jupyter
