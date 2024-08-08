@@ -100,7 +100,7 @@ declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "nano" "screenfe
 arraylength=${#Reqs[@]}
 declare -a failedInstalls  # Array to keep track of failed installations
 
-# Harlequin
+
 
 # Function to check if the user is root or superuser
 check_superuser() {
@@ -135,6 +135,26 @@ for req in "${Reqs[@]}"; do
             ;;
     esac
 done
+
+
+# Harlequin
+MezPrint "Installing Harlequin"
+case $user_type in
+        "root")
+            apt install -y pipx || failedInstalls+=("$req")
+            ;;
+        "superuser")
+            sudo apt install -y pipx || failedInstalls+=("$req")
+            ;;
+        "normal_user")
+            echo "sudo password required for installation of $req"
+            sudo apt install -y pipx || failedInstalls+=("$req")
+            ;;
+esac
+pipx install harlequin
+pipx ensurepath
+
+
 
 # #exa (new way)
 # MezPrint "Installing exa"
