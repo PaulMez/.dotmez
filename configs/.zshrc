@@ -56,6 +56,7 @@ alias egrep='egrep --color=auto'
 alias md='mkdir -p'
 alias rd=rmdir
 alias cc=clear
+alias harlequin="harlequin --theme dracula --locale C" 
 #sudo du -h --max-depth=1 /usr/share/ | sort -hr | head -n 10
 
 
