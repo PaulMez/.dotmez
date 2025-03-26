@@ -1,0 +1,134 @@
+//nano ~/.config/zellij/config.kdl
+
+
+
+//ALT/CMD - Panes
+//SHIFT + ALT/CMD - Tabs
+
+// Enable mouse support
+mouse_mode false
+
+keybinds {
+    normal {
+        // Create a new pane
+        bind "Alt n" { NewPane; }
+        
+        // Close current pane
+        bind "Alt c" { CloseFocus; }
+        
+        // Create a new tab
+        bind "Alt N" { NewTab; }
+        
+        // Close current tab
+        bind "Alt C" { CloseTab; }
+        
+        // Move to next tab
+        bind "Alt ." { GoToNextTab; }
+        
+        // Move to previous tab
+        bind "Alt ," { GoToPreviousTab; }
+        
+        // Move focus between panes (Arrow Keys)
+        bind "Alt Left" { MoveFocusOrTab "Left"; }
+        bind "Alt Right" { MoveFocusOrTab "Right"; }
+        bind "Alt Up" { MoveFocus "Up"; }
+        bind "Alt Down" { MoveFocus "Down"; }
+        
+	// Toggle help screen
+        //bind "Alt /" { ToggleHelp; }
+        
+        // Toggle pane frames (which can also show some shortcuts)
+        bind "Alt f" { TogglePaneFrames; }
+   
+    }
+}
+
+// Enable displaying pane frames by default
+//pane_frames false
+
+// ui.pane_frames.show_tips = false   need to  find way to do this
+
+
+// Optional: configure the help screen to be more informative
+ui {
+    pane_frames {
+        rounded_corners true
+        hide_session_name true
+	show_tips false
+	
+    }
+}
+
+status-bar {
+  left "🚀 Alt+N: NewPane | Alt+Shift+N: NewTab | Alt+C: Close"
+}
+
+
+
+
+-----------------------------------------------------
+
+#!/bin/bash
+
+# Script to install Zellij and the zjstatus plugin
+
+# Ensure the script runs as root if necessary (to install system-wide dependencies)
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Please run as root or use sudo."
+  exit 1
+fi
+
+# Step 1: Install Zellij
+echo "Installing Zellij..."
+
+# Check for zellij
+if ! command -v zellij &> /dev/null; then
+  # Zellij installation
+  curl -sSL https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz | tar -xz -C /usr/local/bin
+  echo "Zellij installed successfully."
+else
+  echo "Zellij is already installed."
+fi
+
+# Step 2: Install the zjstatus plugin
+echo "Installing zjstatus plugin..."
+
+# Create necessary Zellij plugin directory if it doesn't exist
+ZELLIJ_CONFIG_DIR="$HOME/.config/zellij"
+ZJSTATUS_DIR="$ZELLIJ_CONFIG_DIR/plugins/zjstatus"
+
+mkdir -p "$ZJSTATUS_DIR"
+
+# Download the zjstatus plugin
+curl -sSL https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.zip -o "$ZJSTATUS_DIR/zjstatus.zip"
+
+# Extract the plugin
+unzip "$ZJSTATUS_DIR/zjstatus.zip" -d "$ZJSTATUS_DIR"
+
+# Clean up the zip file
+rm "$ZJSTATUS_DIR/zjstatus.zip"
+
+echo "zjstatus plugin installed."
+
+# Step 3: Configure zellij to use zjstatus
+echo "Setting up Zellij configuration..."
+
+# Check if zellij config file exists, create it if it doesn't
+if [ ! -f "$ZELLIJ_CONFIG_DIR/config.yaml" ]; then
+  touch "$ZELLIJ_CONFIG_DIR/config.yaml"
+fi
+
+# Add plugin configuration to zellij config (this might already exist, so append)
+echo -e "\n# Zellij plugin configuration for zjstatus" >> "$ZELLIJ_CONFIG_DIR/config.yaml"
+echo "plugins:" >> "$ZELLIJ_CONFIG_DIR/config.yaml"
+echo "  - name: zjstatus" >> "$ZELLIJ_CONFIG_DIR/config.yaml"
+echo "    path: $ZJSTATUS_DIR" >> "$ZELLIJ_CONFIG_DIR/config.yaml"
+
+echo "Zellij configured to use zjstatus plugin."
+
+# Step 4: Final instructions
+echo "Installation complete."
+echo "You can now launch Zellij and the zjstatus plugin should be available."
+
+# Optional: Launch Zellij to test
+# zellij
