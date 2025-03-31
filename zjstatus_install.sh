@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#bash -c "$(curl -H 'Cache-Control: no-cache' -fsSL https://raw.githubusercontent.com/PaulMez/.dotmez/refs/heads/main/zjstatus_install.sh)"
 # Set variables
 REPO="dj95/zjstatus"
 INSTALL_DIR="$HOME/.config/zellij/plugins"  # Where zjstatus will be stored
