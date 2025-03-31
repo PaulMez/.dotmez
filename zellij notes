@@ -12,7 +12,10 @@ keybinds {
     normal {
         // Create a new pane
         bind "Alt n" { NewPane; }
-        
+
+	//Create a new pane (Horizontal)
+	bind "Alt -" { NewPane "Down";}
+
         // Close current pane
         bind "Alt c" { CloseFocus; }
         
