@@ -96,7 +96,7 @@ sudo apt upgrade -y
 
 MezPrint "Installing The Usual Suspects..."
 # Dependencies & Common Apps
-declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "nano" "screenfetch" "gawk" "htop" "rmlint" "ncdu" "links2" "gdu" "eza" "btop" "bat" "lazydocker" "ranger" "fzf")
+declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "nano" "screenfetch" "gawk" "micro" "htop" "rmlint" "ncdu" "links2" "gdu" "eza" "btop" "bat" "lazydocker" "ranger" "fzf")
 arraylength=${#Reqs[@]}
 declare -a failedInstalls  # Array to keep track of failed installations
 
