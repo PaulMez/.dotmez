@@ -35,12 +35,22 @@ function cat() {
 
 ## SAME FOR BTOP
 
+# Determine which ls command to use (eza preferred, exa fallback, ls last resort)
+# Check once at startup - no performance overhead on each command
+if command -v eza &> /dev/null; then
+    LS_CMD="eza"
+elif command -v exa &> /dev/null; then
+    LS_CMD="exa"
+else
+    LS_CMD="ls"
+fi
+
 # alias ls='ls --color=auto'
-alias ls='exa -1la --colour=always --icons  --group-directories-first'
+alias ls="$LS_CMD -1la --colour=always --icons --group-directories-first"
 # alias ll='ls -lahG --color=auto'
-alias ll='exa -a --colour=always --icons  --group-directories-first'
-alias lt='exa -Ta --colour=always --icons  --group-directories-first'
-alias ltt='exa -T --colour=always --icons  --group-directories-first'
+alias ll="$LS_CMD -a --colour=always --icons --group-directories-first"
+alias lt="$LS_CMD -Ta --colour=always --icons --group-directories-first"
+alias ltt="$LS_CMD -T --colour=always --icons --group-directories-first"
 
 alias tt="cd ~/aws/tinytales/"
 alias ttf="cd ~/aws/tinytales/tinytales_frontend/"

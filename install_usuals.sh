@@ -85,23 +85,6 @@ echo -e "${CYAN}_____________________________________________${RESET}";
 #    esac
 # done
 
-# #update first
-MezPrint "Updating apt"
-sudo apt update -y
-sudo apt upgrade -y
-
-
-# Checkout https://github.com/joouha/euporie       Jupyter
-# Checkout https://github.com/tconbeer/harlequin   SQL IDE
-
-MezPrint "Installing The Usual Suspects..."
-# Dependencies & Common Apps
-declare -a Reqs=("wget" "zsh" "curl" "git" "unzip" "fontconfig" "nano" "screenfetch" "gawk" "micro" "htop" "rmlint" "ncdu" "links2" "gdu" "eza" "btop" "bat" "lazydocker" "ranger" "fzf")
-arraylength=${#Reqs[@]}
-declare -a failedInstalls  # Array to keep track of failed installations
-
-
-
 # Function to check if the user is root or superuser
 check_superuser() {
     if [ "$EUID" -eq 0 ]; then
@@ -116,43 +99,283 @@ check_superuser() {
     fi
 }
 
+# Detect package manager
+detect_package_manager() {
+    if command -v apt-get &> /dev/null; then
+        echo "apt"
+    elif command -v dnf &> /dev/null; then
+        echo "dnf"
+    elif command -v yum &> /dev/null; then
+        echo "yum"
+    elif command -v pacman &> /dev/null; then
+        echo "pacman"
+    elif command -v zypper &> /dev/null; then
+        echo "zypper"
+    else
+        echo "unknown"
+    fi
+}
+
+# Package manager update function
+update_packages() {
+    local pkg_mgr=$1
+    local user_type=$2
+    
+    MezPrint "Updating package manager ($pkg_mgr)..."
+    
+    case $pkg_mgr in
+        "apt")
+            case $user_type in
+                "root")
+                    apt update -y && apt upgrade -y
+                    ;;
+                *)
+                    sudo apt update -y && sudo apt upgrade -y
+                    ;;
+            esac
+            ;;
+        "dnf")
+            case $user_type in
+                "root")
+                    dnf update -y
+                    ;;
+                *)
+                    sudo dnf update -y
+                    ;;
+            esac
+            ;;
+        "yum")
+            case $user_type in
+                "root")
+                    yum update -y
+                    ;;
+                *)
+                    sudo yum update -y
+                    ;;
+            esac
+            ;;
+        "pacman")
+            case $user_type in
+                "root")
+                    pacman -Syu --noconfirm
+                    ;;
+                *)
+                    sudo pacman -Syu --noconfirm
+                    ;;
+            esac
+            ;;
+        "zypper")
+            case $user_type in
+                "root")
+                    zypper refresh && zypper update -y
+                    ;;
+                *)
+                    sudo zypper refresh && sudo zypper update -y
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+# Package installation function
+install_package() {
+    local pkg=$1
+    local pkg_mgr=$2
+    local user_type=$3
+    
+    case $pkg_mgr in
+        "apt")
+            case $user_type in
+                "root")
+                    apt install "$pkg" -y || return 1
+                    ;;
+                *)
+                    sudo apt install "$pkg" -y || return 1
+                    ;;
+            esac
+            ;;
+        "dnf")
+            case $user_type in
+                "root")
+                    dnf install "$pkg" -y || return 1
+                    ;;
+                *)
+                    sudo dnf install "$pkg" -y || return 1
+                    ;;
+            esac
+            ;;
+        "yum")
+            case $user_type in
+                "root")
+                    yum install "$pkg" -y || return 1
+                    ;;
+                *)
+                    sudo yum install "$pkg" -y || return 1
+                    ;;
+            esac
+            ;;
+        "pacman")
+            case $user_type in
+                "root")
+                    pacman -S "$pkg" --noconfirm || return 1
+                    ;;
+                *)
+                    sudo pacman -S "$pkg" --noconfirm || return 1
+                    ;;
+            esac
+            ;;
+        "zypper")
+            case $user_type in
+                "root")
+                    zypper install -y "$pkg" || return 1
+                    ;;
+                *)
+                    sudo zypper install -y "$pkg" || return 1
+                    ;;
+            esac
+            ;;
+        *)
+            echo "Unknown package manager: $pkg_mgr"
+            return 1
+            ;;
+    esac
+}
+
+# Detect package manager
+PKG_MGR=$(detect_package_manager)
+if [ "$PKG_MGR" = "unknown" ]; then
+    echo "Error: Could not detect package manager. Supported: apt, dnf, yum, pacman, zypper"
+    exit 1
+fi
+
+MezPrint "Detected package manager: $PKG_MGR"
+
+# Update packages
+user_type=$(check_superuser)
+update_packages "$PKG_MGR" "$user_type"
+
+# Checkout https://github.com/joouha/euporie       Jupyter
+# Checkout https://github.com/tconbeer/harlequin   SQL IDE
+
+MezPrint "Installing The Usual Suspects..."
+# Dependencies & Common Apps
+declare -a Reqs=(
+    # Core utilities
+    "wget" "curl" "git" "unzip" "gawk" "nano"
+    # Shell & terminal
+    "zsh" "micro" "screenfetch"
+    # System monitoring & disk usage
+    "htop" "btop" "ncdu" "gdu" "rmlint"
+    # File management & navigation
+    "ranger" "fzf" "eza" "bat"
+    # Other tools
+    "fontconfig" "links2" "lazydocker"
+)
+declare -a failedInstalls  # Array to keep track of failed installations
+
 # Loop through each requirement
 for req in "${Reqs[@]}"; do
     MezPrint "Installing $req..."
-    user_type=$(check_superuser)
-    
-    # Check user type and install requirement accordingly
-    case $user_type in
-        "root")
-            apt install "$req" -yy || failedInstalls+=("$req")
-            ;;
-        "superuser")
-            sudo apt install "$req" -yy || failedInstalls+=("$req")
-            ;;
-        "normal_user")
-            echo "sudo password required for installation of $req"
-            sudo apt install "$req" -yy || failedInstalls+=("$req")
-            ;;
-    esac
+    if ! install_package "$req" "$PKG_MGR" "$user_type"; then
+        failedInstalls+=("$req")
+    fi
 done
 
+# Check if eza works, install if needed
+MezPrint "Checking eza..."
+EZA_WORKS=false
+if command -v eza &> /dev/null; then
+    # Test if eza actually works
+    if eza --version &> /dev/null; then
+        echo "eza is already installed and working"
+        EZA_WORKS=true
+    else
+        echo "eza found but not working, will reinstall"
+    fi
+fi
+
+if [ "$EZA_WORKS" = false ]; then
+    MezPrint "Installing eza (from Binary)"
+    EZA_VERSION=$(curl -s "https://api.github.com/repos/eza-community/eza/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/^v//')
+    if [ -z "$EZA_VERSION" ]; then
+        EZA_VERSION="0.18.0"  # Fallback version
+    fi
+    
+    ARCH=$(uname -m)
+    case "$ARCH" in
+        x86_64) EZA_ARCH="x86_64" ;;
+        aarch64|arm64) EZA_ARCH="aarch64" ;;
+        *) EZA_ARCH="x86_64" ;;  # Default fallback
+    esac
+    
+    OS_TYPE=$(uname -s)
+    case "$OS_TYPE" in
+        Linux)  EZA_BINARY="eza_${EZA_VERSION}-${EZA_ARCH}-unknown-linux-musl.tar.gz" ;;
+        Darwin) EZA_BINARY="eza_${EZA_VERSION}-${EZA_ARCH}-apple-darwin.tar.gz" ;;
+        *)      echo "Unsupported OS for eza: $OS_TYPE"
+                failedInstalls+=("eza-unsupported-os")
+                ;;
+    esac
+    
+    if [ -n "$EZA_BINARY" ]; then
+        EZA_URL="https://github.com/eza-community/eza/releases/download/v${EZA_VERSION}/${EZA_BINARY}"
+        INSTALL_DIR="/usr/local/bin"
+        
+        echo "Downloading eza v${EZA_VERSION} from: $EZA_URL"
+        curl -L "$EZA_URL" -o eza.tar.gz
+        
+        if [ $? -eq 0 ]; then
+            case $user_type in
+                "root")
+                    tar -xzf eza.tar.gz -C /tmp
+                    # Find the eza binary (might be in a subdirectory)
+                    EZA_BIN_PATH=$(find /tmp -name "eza" -type f 2>/dev/null | head -n 1)
+                    if [ -n "$EZA_BIN_PATH" ]; then
+                        mv "$EZA_BIN_PATH" "$INSTALL_DIR/eza" 2>/dev/null || cp "$EZA_BIN_PATH" "$INSTALL_DIR/eza"
+                        chmod +x "$INSTALL_DIR/eza"
+                    fi
+                    ;;
+                *)
+                    sudo tar -xzf eza.tar.gz -C /tmp
+                    # Find the eza binary (might be in a subdirectory)
+                    EZA_BIN_PATH=$(find /tmp -name "eza" -type f 2>/dev/null | head -n 1)
+                    if [ -n "$EZA_BIN_PATH" ]; then
+                        sudo mv "$EZA_BIN_PATH" "$INSTALL_DIR/eza" 2>/dev/null || sudo cp "$EZA_BIN_PATH" "$INSTALL_DIR/eza"
+                        sudo chmod +x "$INSTALL_DIR/eza"
+                    fi
+                    ;;
+            esac
+            rm -rf /tmp/eza* eza.tar.gz
+            
+            if command -v eza &> /dev/null; then
+                echo "eza installed successfully"
+            else
+                echo "eza installation failed - binary not in PATH"
+                failedInstalls+=("eza")
+            fi
+        else
+            echo "Failed to download eza"
+            failedInstalls+=("eza-download")
+        fi
+    fi
+    
+    # Verify installation worked
+    if command -v eza &> /dev/null && eza --version &> /dev/null; then
+        echo "eza installed and verified successfully"
+    elif [ "$EZA_WORKS" = false ]; then
+        echo "eza installation failed or not working"
+        failedInstalls+=("eza")
+    fi
+fi
 
 # Harlequin
 MezPrint "Installing Harlequin"
-case $user_type in
-        "root")
-            apt install -y pipx || failedInstalls+=("$req")
-            ;;
-        "superuser")
-            sudo apt install -y pipx || failedInstalls+=("$req")
-            ;;
-        "normal_user")
-            echo "sudo password required for installation of $req"
-            sudo apt install -y pipx || failedInstalls+=("$req")
-            ;;
-esac
-pipx install harlequin
-pipx ensurepath
+if ! install_package "pipx" "$PKG_MGR" "$user_type"; then
+    failedInstalls+=("pipx")
+else
+    pipx install harlequin
+    pipx ensurepath
+fi
 
 
 
@@ -168,14 +391,25 @@ pipx ensurepath
 
 #.dotmez
 MezPrint "Installing .dotmez"
-git clone --depth=1 https://github.com/PaulMez/.dotmez.git ~/.dotmez
+if [ -d ~/.dotmez ]; then
+    echo "~/.dotmez already exists, updating..."
+    cd ~/.dotmez && git pull && cd - || failedInstalls+=("dotmez-update")
+else
+    git clone --depth=1 https://github.com/PaulMez/.dotmez.git ~/.dotmez || failedInstalls+=("dotmez")
+fi
 
 #Nerd Fonts
 MezPrint "Installing Nerd Fonts (FiraCode)"
-wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/FiraCode.zip
-unzip FiraCode.zip -d ~/.fonts
-rm FiraCode.zip
-fc-cache -fv
+mkdir -p ~/.fonts
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/FiraCode.zip -O /tmp/FiraCode.zip
+if [ $? -eq 0 ]; then
+    unzip -q /tmp/FiraCode.zip -d ~/.fonts
+    rm -f /tmp/FiraCode.zip
+    fc-cache -fv
+else
+    echo "Failed to download FiraCode font"
+    failedInstalls+=("fira-code-font")
+fi
 
 
 # Install Oh-my-zsh
