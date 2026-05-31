@@ -2,7 +2,7 @@
 description: "Implement a task from AI-Task.yml. Pass a task ID, or filter by size/priority, or leave blank to auto-pick the highest priority ready task with no unmet dependencies."
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 subtask: true
-model: anthropic/claude-sonnet-4-6
+model: openai/gpt-5.2-codex
 argument-hint: "[task-ID] [--size small|medium|large] [--priority low|medium|high] [--dry-run]"
 ---
 
