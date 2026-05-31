@@ -2,7 +2,7 @@
 description: "Add or update a task in AI-Task.yml. Reads the codebase to enrich the description automatically."
 allowed-tools: Read, Write, Glob, Grep, Bash
 subtask: true
-model: anthropic/claude-sonnet-4-6
+model: openai/gpt-5.2-codex
 argument-hint: "[task name or description]"
 ---
 
