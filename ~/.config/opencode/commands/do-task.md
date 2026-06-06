@@ -43,20 +43,22 @@ Multiple filters combine: `--size small --priority high` finds small + high prio
    ```
    If `--dry-run` is in $ARGUMENTS, stop here and describe what files you would change and how.
 
-4. **Scan the codebase** to understand context:
+4. **Mark task as in-progress** — immediately update the task's `status` to `in-progress` in AI-Task.yml so other agents know this task is being worked on. Do this before any codebase scanning or implementation.
+
+5. **Scan the codebase** to understand context:
    - Use Glob to find files relevant to the task name/description
    - Use Grep to find existing symbols, components, or patterns to follow
    - Read the most relevant files before making changes
 
-5. **Implement the task** — make the actual code changes using Edit or Write. Follow existing patterns and conventions in the codebase. Keep changes focused on what the task describes — don't refactor unrelated code.
+6. **Implement the task** — make the actual code changes using Edit or Write. Follow existing patterns and conventions in the codebase. Keep changes focused on what the task describes — don't refactor unrelated code.
 
-6. **Update AI-Task.yml** — change the task's `status` from `ready` to `done`. Do not modify any other fields.
+7. **Update AI-Task.yml** — change the task's `status` from `in-progress` to `done`. Do not modify any other fields.
 
-7. **Print a completion summary**:
+8. **Print a completion summary**:
    ```
    ✓ Completed task-03
    Files changed: src/components/Auth.tsx, src/styles/auth.css
-   Status updated: ready → done
+   Status updated: ready → in-progress → done
    ```
 
 ---
