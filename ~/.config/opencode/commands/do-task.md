@@ -43,18 +43,32 @@ Multiple filters combine: `--size small --priority high` finds small + high prio
    ```
    If `--dry-run` is in $ARGUMENTS, stop here and describe what files you would change and how.
 
-4. **Mark task as in-progress** — immediately update the task's `status` to `in-progress` in AI-Task.yml so other agents know this task is being worked on. Do this before any codebase scanning or implementation.
+4. **Check size before starting large tasks** — if the selected task's `size` is `large`, stop and print:
+   ```
+   ⚠ This is a large task. Large tasks can consume a lot of context during
+   codebase scanning and implementation.
 
-5. **Scan the codebase** to understand context:
+   Consider running /compact or /clear now to free up context before I begin,
+   then re-run this command to continue.
+
+   Reply "continue" to proceed anyway without clearing context.
+   ```
+   Wait for the user's response. Do not mark the task in-progress or make any
+   changes until they confirm. Skip this step entirely for `small` and `medium`
+   tasks.
+
+5. **Mark task as in-progress** — immediately update the task's `status` to `in-progress` in AI-Task.yml so other agents know this task is being worked on. Do this before any codebase scanning or implementation.
+
+6. **Scan the codebase** to understand context:
    - Use Glob to find files relevant to the task name/description
    - Use Grep to find existing symbols, components, or patterns to follow
    - Read the most relevant files before making changes
 
-6. **Implement the task** — make the actual code changes using Edit or Write. Follow existing patterns and conventions in the codebase. Keep changes focused on what the task describes — don't refactor unrelated code.
+7. **Implement the task** — make the actual code changes using Edit or Write. Follow existing patterns and conventions in the codebase. Keep changes focused on what the task describes — don't refactor unrelated code.
 
-7. **Update AI-Task.yml** — change the task's `status` from `in-progress` to `done`. Do not modify any other fields.
+8. **Update AI-Task.yml** — change the task's `status` from `in-progress` to `done`. Do not modify any other fields.
 
-8. **Print a completion summary**:
+9. **Print a completion summary**:
    ```
    ✓ Completed task-03
    Files changed: src/components/Auth.tsx, src/styles/auth.css
