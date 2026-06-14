@@ -33,8 +33,8 @@ make retest         # reset-docker → run → sleep 3 → ssh
 | `configs/` | Shell configs deployed to `$HOME` (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
 | `ubuntuDesktop/` | Ubuntu-specific shell configs (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
 | `macos/` | macOS-specific shell configs + alias dump |
-| `AI Utilities/.claude/skills/` | Claude Code custom skills (`add-task`, `do-task`, `clean-tasks`, `list-task`) |
-| `AI Utilities/.config/opencode/commands/` | OpenCode slash commands (`add-task`, `do-task`, `clean-tasks`, `list-task`) |
+| `AI Utilities/.claude/skills/` | Claude Code custom skills (`task-add`, `task-do`, `task-clean`, `task-list`) |
+| `AI Utilities/.config/opencode/commands/` | OpenCode slash commands (`task-add`, `task-do`, `task-clean`, `task-list`) |
 | `exa_demo/` | Demo files for the `exa` ls replacement |
 | `Dockerfile` | Ubuntu 22.04 image with XFCE4, XRDP, and SSH for testing |
 
@@ -44,10 +44,10 @@ Tasks live in `AI-Task.yml` at the repo root. The skills/commands that manage th
 
 - **Statuses**: `ready` → `in-progress` → `done` (or `cancelled`)
 - **Fields**: `id`, `name`, `description`, `status`, `size` (small/medium/large), `priority` (low/medium/high), `dependencies` (list of IDs), `created_date`
-- `/add-task` — creates or updates a task, enriching the description from codebase context
-- `/do-task` — picks and implements a task, auto-selecting highest-priority unblocked `ready` task if no ID given
-- `/clean-tasks` — archives `done`/`cancelled` tasks from `AI-Task.yml` into `Completed-AI-Task.yml`
-- `/list-task` — lists tasks one per line (id, name, size, priority, status); supports `--sort created|priority|size|status` and `--order asc|desc`
+- `/task-add` — creates or updates a task, enriching the description from codebase context
+- `/task-do` — picks and implements a task, auto-selecting highest-priority unblocked `ready` task if no ID given
+- `/task-clean` — archives `done`/`cancelled` tasks from `AI-Task.yml` into `Completed-AI-Task.yml`
+- `/task-list` — lists tasks one per line (id, name, size, priority, status); supports `--sort created|priority|size|status` and `--order asc|desc`
 
 The Claude Code versions live in `AI Utilities/.claude/skills/`; the OpenCode versions live in `AI Utilities/.config/opencode/commands/`. When updating skill logic, update both locations to keep them in sync.
 

@@ -1,14 +1,12 @@
 ---
 description: "List tasks from AI-Task.yml. Default view is one line per task (id, name, size, priority, status); pass a sort option to reorder."
 allowed-tools: Read, Bash
-subtask: true
-model: openai/gpt-5.2-codex
 argument-hint: "[--sort created|priority|size|status] [--order asc|desc]"
 ---
 
 You are a task lister for this project/git repo. When invoked with $ARGUMENTS, you will:
 
-1. **Read AI-Task.yml** from the repo root. If it does not exist or has no tasks, print "No AI-Task.yml found — nothing to list. Run /add-task first." and stop.
+1. **Read AI-Task.yml** from the repo root. If it does not exist or has no tasks, print "No AI-Task.yml found — nothing to list. Run /task-add first." and stop.
 
 2. **Determine sort field and order** from $ARGUMENTS:
    - `--sort created` → order by `created_date` (default `asc` = oldest first)

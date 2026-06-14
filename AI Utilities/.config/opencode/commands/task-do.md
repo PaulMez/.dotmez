@@ -24,7 +24,7 @@ Multiple filters combine: `--size small --priority high` finds small + high prio
 
 ## Steps
 
-1. **Read AI-Task.yml** from the repo root. If it does not exist, stop and say: "No AI-Task.yml found. Run /add-task first."
+1. **Read AI-Task.yml** from the repo root. If it does not exist, stop and say: "No AI-Task.yml found. Run /task-add first."
 
 2. **Select the target task** based on $ARGUMENTS:
    - If a task ID like `task-03` is given → use that task. If not found, list available IDs and stop.
