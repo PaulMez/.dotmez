@@ -4,7 +4,7 @@
 set -euo pipefail
 
 DOTMEZ_DIR="$(cd "$(dirname "$0")" && pwd)"
-SRC="$DOTMEZ_DIR/~/.claude/skills"
+SRC="$DOTMEZ_DIR/AI Utilities/.claude/skills"
 DEST="$HOME/.claude/skills"
 
 if [[ ! -d "$SRC" ]]; then

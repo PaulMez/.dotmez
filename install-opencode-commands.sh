@@ -4,7 +4,7 @@
 set -euo pipefail
 
 DOTMEZ_DIR="$(cd "$(dirname "$0")" && pwd)"
-SRC="$DOTMEZ_DIR/~/.config/opencode/commands"
+SRC="$DOTMEZ_DIR/AI Utilities/.config/opencode/commands"
 DEST="$HOME/.config/opencode/commands"
 
 if [[ ! -d "$SRC" ]]; then
