@@ -1,25 +1,34 @@
 ---
-description: "List tasks from AI-Task.yml. Default view is one line per task (id, name, size, priority, status); pass a sort option to reorder."
+description: "List tasks from AI-Task.yml. Shows up to 10 non-done tasks by default, one line per task (id, name, size, priority, status); supports --all/--limit and sort options."
 allowed-tools: Read, Bash
 subtask: true
 model: openai/gpt-5.2-codex
-argument-hint: "[--sort created|priority|size|status] [--order asc|desc]"
+argument-hint: "[--limit N|--all] [--sort c|created|p|priority|sz|size|st|status] [--order a|asc|d|desc]"
 ---
 
 You are a task lister for this project/git repo. When invoked with $ARGUMENTS, you will:
 
 1. **Read AI-Task.yml** from the repo root. If it does not exist or has no tasks, print "No AI-Task.yml found — nothing to list. Run /task-add first." and stop.
 
-2. **Determine sort field and order** from $ARGUMENTS:
-   - `--sort created` → order by `created_date` (default `asc` = oldest first)
-   - `--sort priority` → order by `priority` (default `desc` = `high` → `medium` → `low`)
-   - `--sort size` → order by `size` (default `asc` = `small` → `medium` → `large`)
-   - `--sort status` → group by `status` (default order: `in-progress`, `ready`, `done`, `cancelled`)
+2. **Filter by status**:
+   - By default, exclude tasks with `status: done`.
+   - If `--all` is given, include every task regardless of status (including `done` and `cancelled`).
+
+3. **Determine sort field and order** from $ARGUMENTS. Sort fields accept the full name or the short prefix shown:
+   - `c` / `created` → order by `created_date` (default `asc` = oldest first)
+   - `p` / `priority` → order by `priority` (default `desc` = `high` → `medium` → `low`)
+   - `sz` / `size` → order by `size` (default `asc` = `small` → `medium` → `large`)
+   - `st` / `status` → group by `status` (default order: `in-progress`, `ready`, `done`, `cancelled`)
    - _(no `--sort`)_ → keep the order tasks appear in AI-Task.yml; `--order` is ignored in this case
 
-   If `--order asc` or `--order desc` is also given, apply it on top of the chosen `--sort` field — `desc` reverses the default ordering above (for `--sort status`, `desc` reverses the group order to `cancelled`, `done`, `ready`, `in-progress`).
+   `--order` also accepts a short prefix: `a` / `asc`, `d` / `desc`. `desc` reverses the default ordering above (for `--sort status`, `desc` reverses the group order to `cancelled`, `done`, `ready`, `in-progress`).
 
-3. **Print one line per task** in this exact column format, aligned with padding:
+4. **Determine the limit** from $ARGUMENTS:
+   - Default: show at most **10** tasks (after filtering and sorting)
+   - `--all` → no limit, show every filtered task
+   - `--limit N` → show at most `N` tasks. Combine with `--all` to also include `done`/`cancelled` tasks.
+
+5. **Print one line per task** (up to the limit) in this exact column format, aligned with padding:
 
    ```
    task-01  Make heading bigger              small   low     ready
@@ -29,15 +38,17 @@ You are a task lister for this project/git repo. When invoked with $ARGUMENTS, y
 
    Columns: `id`, `name` (truncate to ~32 chars with `…` if longer), `size`, `priority`, `status`. Use consistent column widths across all rows.
 
-4. **Print a one-line footer** with the total count and the sort applied, e.g.:
+6. **Print a one-line footer** with counts and the sort applied, e.g.:
    ```
-   3 task(s) — sorted by priority (desc)
+   Showing 10 of 23 task(s) (3 done hidden) — sorted by priority (desc)
    ```
-   If no `--sort` was given, print `3 task(s) — unsorted (AI-Task.yml order)`.
+   - If no `--sort` was given, replace `sorted by ... (...)` with `unsorted (AI-Task.yml order)`.
+   - If the filtered set fits within the limit, omit the "Showing X of Y" prefix and just print `Y task(s) ...` (add `(Z done hidden)` if any were excluded by the default status filter).
+   - If `--all` was given, drop the "done hidden" note entirely since nothing was excluded.
 
-5. **After printing the list**, offer the available sort options the user hasn't used, e.g.:
+7. **After printing the list**, offer the limit/sort options the user hasn't used, e.g.:
    ```
-   Tip: re-run with --sort created | priority | size | status, optionally with --order asc | desc.
+   Tip: re-run with --limit N or --all to change how many are shown, or --sort c|p|sz|st (created/priority/size/status), optionally --order a|d.
    ```
 
 ---
@@ -45,4 +56,4 @@ You are a task lister for this project/git repo. When invoked with $ARGUMENTS, y
 ## Rules
 - Read-only — never modify AI-Task.yml or Completed-AI-Task.yml
 - Do not scan the codebase or enrich descriptions — this command is for a quick overview only
-- If `$ARGUMENTS` includes an unrecognized `--sort` or `--order` value, list the valid options and fall back to AI-Task.yml's existing order
+- If `$ARGUMENTS` includes an unrecognized `--sort`, `--order`, or `--limit` value, list the valid options and fall back to the defaults (limit 10, `done` hidden, AI-Task.yml order)
