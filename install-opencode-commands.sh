@@ -14,6 +14,14 @@ fi
 
 mkdir -p "$DEST"
 
+# Remove old command names replaced by the task-* convention
+for old_cmd in do-task add-task list-task; do
+  if [[ -f "$DEST/$old_cmd.md" ]]; then
+    rm -f "$DEST/$old_cmd.md"
+    echo "Removed outdated command: $old_cmd"
+  fi
+done
+
 for cmd_file in "$SRC"/*.md; do
   cp -v "$cmd_file" "$DEST/$(basename "$cmd_file")"
 done

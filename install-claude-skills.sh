@@ -14,6 +14,14 @@ fi
 
 mkdir -p "$DEST"
 
+# Remove old skill names replaced by the task-* convention
+for old_skill in do-task add-task; do
+  if [[ -d "$DEST/$old_skill" ]]; then
+    rm -rf "$DEST/$old_skill"
+    echo "Removed outdated skill: $old_skill"
+  fi
+done
+
 for skill_dir in "$SRC"/*/; do
   skill_name="$(basename "$skill_dir")"
   dest_skill="$DEST/$skill_name"

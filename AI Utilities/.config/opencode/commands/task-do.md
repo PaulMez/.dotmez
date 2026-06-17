@@ -43,19 +43,11 @@ Multiple filters combine: `--size small --priority high` finds small + high prio
    ```
    If `--dry-run` is in $ARGUMENTS, stop here and describe what files you would change and how.
 
-4. **Check size before starting large tasks** — if the selected task's `size` is `large`, stop and print:
+4. **Check size before starting large tasks** — if the selected task's `size` is `large`, print this reminder then immediately continue:
    ```
-   ⚠ This is a large task. Large tasks can consume a lot of context during
-   codebase scanning and implementation.
-
-   Consider running /compact or /clear now to free up context before I begin,
-   then re-run this command to continue.
-
-   Reply "continue" to proceed anyway without clearing context.
+   ⚠ Large task: this may consume significant context. Consider /compact or /clear before re-running if you hit limits.
    ```
-   Wait for the user's response. Do not mark the task in-progress or make any
-   changes until they confirm. Skip this step entirely for `small` and `medium`
-   tasks.
+   Skip this step entirely for `small` and `medium` tasks.
 
 5. **Mark task as in-progress** — immediately update the task's `status` to `in-progress` in AI-Task.yml so other agents know this task is being worked on. Do this before any codebase scanning or implementation.
 
