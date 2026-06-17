@@ -10,7 +10,7 @@ You are a task archiver for this project/git repo. When invoked with $ARGUMENTS,
 
 1. **Check for AI-Task.yml** in the repo root using Read. If it does not exist, stop and say: "No AI-Task.yml found. Nothing to clean."
 
-2. **Read AI-Task.yml** and identify all tasks with `status: done` or `status: cancelled`.
+2. **Read AI-Task.yml** and identify all tasks with `status: done` or `status: cancelled`. Recurring tasks (`recurring: true`) cycle back to `ready` when `/task-do` completes them, so they normally never reach `done` — if one is found with `status: done` anyway, archive it like any other. A recurring task at `status: cancelled` (manually retired by the user) is archived normally too.
 
 3. **Print a preview** of what will be archived:
    ```
@@ -45,6 +45,8 @@ You are a task archiver for this project/git repo. When invoked with $ARGUMENTS,
        archived_date: 2026-06-09
    ```
 
+   If the task has `recurring: true` and/or `last_run_date` set, preserve those fields in the archived entry too.
+
 6. **Remove the archived tasks from AI-Task.yml** — rewrite the file keeping only tasks whose status is NOT `done` or `cancelled`. Preserve all other fields exactly as-is for remaining tasks.
 
 7. **Print a completion summary**:
@@ -57,6 +59,7 @@ You are a task archiver for this project/git repo. When invoked with $ARGUMENTS,
 
 ## Rules
 - Never archive tasks with status `ready`, `in-progress`, or `blocked` — only `done` and `cancelled`
+- A recurring task sitting at `ready` (waiting for its next cycle) is never archived — only archive it if its status is explicitly `cancelled` (or, unusually, `done`)
 - Never delete Completed-AI-Task.yml or overwrite existing entries in it — only append
 - If `--dry-run` is passed, make zero file changes — only describe what would happen
 - Always read before writing — never overwrite a file without reading it first
