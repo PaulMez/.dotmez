@@ -1,9 +1,9 @@
 ---
-description: "List tasks from AI-Task.yml. Shows the 10 most recently created non-done tasks by default, one line per task (id, name, size, priority, status); supports --all/--limit and sort options."
+description: "List tasks from AI-Task.yml. Shows the 10 most recently created non-done tasks by default, one line per task (id, name, size, priority, status); supports --all/--limit, sort options, and --full for untruncated names/descriptions."
 allowed-tools: Read, Bash
 subtask: true
 model: openai/gpt-5.2-codex
-argument-hint: "[--limit N|--all] [--sort c|created|p|priority|sz|size|st|status] [--order a|asc|d|desc] [--recurring]"
+argument-hint: "[--limit N|--all] [--sort c|created|p|priority|sz|size|st|status] [--order a|asc|d|desc] [--recurring] [--full]"
 ---
 
 You are a task lister for this project/git repo. When invoked with $ARGUMENTS, you will:
@@ -32,13 +32,19 @@ You are a task lister for this project/git repo. When invoked with $ARGUMENTS, y
 5. **Print one line per task** (up to the limit) in this exact column format, aligned with padding:
 
    ```
-   task-01  Make heading bigger              small   low     ready        -
-   task-02  Revamp add-website flow          medium  high    in-progress  -
-   task-03  Label sample D3 charts           small   low     done         -
-   task-07  Check nodes have e2e tests       medium  medium  ready        ↻ (last run 2026-06-10)
+   task-01  Make heading bigger                                          small   low     ready        -
+   task-02  Revamp add-website flow                                      medium  high    in-progress  -
+   task-03  Label sample D3 charts                                       small   low     done         -
+   task-07  Check nodes have e2e tests                                   medium  medium  ready        ↻ (last run 2026-06-10)
    ```
 
-   Columns: `id`, `name` (truncate to ~32 chars with `…` if longer), `size`, `priority`, `status`, `recurring` (`-` if not recurring; otherwise `↻` plus `(last run YYYY-MM-DD)` from `last_run_date`, or `↻ (never run)` if recurring but `last_run_date` is absent). Use consistent column widths across all rows. If a task's `status` is `review`, append its `branch` field in parentheses after the status, e.g. `review (task/task-03-add-login-button)`, so the user knows what to merge.
+   Columns: `id`, `name` (truncate to ~60 chars with `…` if longer, unless `--full` is given — see below), `size`, `priority`, `status`, `recurring` (`-` if not recurring; otherwise `↻` plus `(last run YYYY-MM-DD)` from `last_run_date`, or `↻ (never run)` if recurring but `last_run_date` is absent). Use consistent column widths across all rows. If a task's `status` is `review`, append its `branch` field in parentheses after the status, e.g. `review (task/task-03-add-login-button)`, so the user knows what to merge.
+
+   If `--full` is in $ARGUMENTS, show the complete `name` with no truncation (column widths simply expand to fit the longest name in the filtered set), and also print the full `description` on an indented line directly beneath each task's row, e.g.:
+   ```
+   task-02  Revamp add-website flow                  medium  high    in-progress  -
+            Update the add-website wizard in src/components/AddWebsite.tsx to support bulk CSV import.
+   ```
 
 6. **Print a one-line footer** with counts and the sort applied, e.g.:
    ```
@@ -50,7 +56,7 @@ You are a task lister for this project/git repo. When invoked with $ARGUMENTS, y
 
 7. **After printing the list**, offer the limit/sort options the user hasn't used, e.g.:
    ```
-   Tip: re-run with --limit N or --all to change how many are shown, or --sort c|p|sz|st (created/priority/size/status), optionally --order a|d. Use --recurring to show only recurring tasks.
+   Tip: re-run with --limit N or --all to change how many are shown, or --sort c|p|sz|st (created/priority/size/status), optionally --order a|d. Use --recurring to show only recurring tasks, or --full to see untruncated names and descriptions.
    ```
 
 ---
