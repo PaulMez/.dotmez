@@ -58,7 +58,8 @@ You are a task archiver for this project/git repo. When invoked with $ARGUMENTS,
 ---
 
 ## Rules
-- Never archive tasks with status `ready`, `in-progress`, or `blocked` — only `done` and `cancelled`
+- Never archive tasks with status `ready`, `in-progress`, `review`, or `blocked` — only `done` and `cancelled`
+- A task sitting at `review` (created via `/task-do --worktree`) is never archived — it has its own branch/worktree awaiting merge; only archive it once the user manually moves it to `done` or `cancelled`
 - A recurring task sitting at `ready` (waiting for its next cycle) is never archived — only archive it if its status is explicitly `cancelled` (or, unusually, `done`)
 - Never delete Completed-AI-Task.yml or overwrite existing entries in it — only append
 - If `--dry-run` is passed, make zero file changes — only describe what would happen

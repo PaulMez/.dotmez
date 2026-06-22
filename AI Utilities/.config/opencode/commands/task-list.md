@@ -20,9 +20,9 @@ You are a task lister for this project/git repo. When invoked with $ARGUMENTS, y
    - `c` / `created` → order by `created_date` (default `desc` = newest first)
    - `p` / `priority` → order by `priority` (default `desc` = `high` → `medium` → `low`)
    - `sz` / `size` → order by `size` (default `asc` = `small` → `medium` → `large`)
-   - `st` / `status` → group by `status` (default order: `in-progress`, `ready`, `done`, `cancelled`)
+   - `st` / `status` → group by `status` (default order: `in-progress`, `review`, `ready`, `done`, `cancelled`)
 
-   `--order` also accepts a short prefix: `a` / `asc`, `d` / `desc`. `desc` reverses the default ordering above (for `--sort status`, `desc` reverses the group order to `cancelled`, `done`, `ready`, `in-progress`). When no `--sort` is given, `--order asc` shows oldest-created first instead.
+   `--order` also accepts a short prefix: `a` / `asc`, `d` / `desc`. `desc` reverses the default ordering above (for `--sort status`, `desc` reverses the group order to `cancelled`, `done`, `ready`, `review`, `in-progress`). When no `--sort` is given, `--order asc` shows oldest-created first instead.
 
 4. **Determine the limit** from $ARGUMENTS:
    - Default: show at most **10** tasks (after filtering and sorting)
@@ -38,7 +38,7 @@ You are a task lister for this project/git repo. When invoked with $ARGUMENTS, y
    task-07  Check nodes have e2e tests       medium  medium  ready        ↻ (last run 2026-06-10)
    ```
 
-   Columns: `id`, `name` (truncate to ~32 chars with `…` if longer), `size`, `priority`, `status`, `recurring` (`-` if not recurring; otherwise `↻` plus `(last run YYYY-MM-DD)` from `last_run_date`, or `↻ (never run)` if recurring but `last_run_date` is absent). Use consistent column widths across all rows.
+   Columns: `id`, `name` (truncate to ~32 chars with `…` if longer), `size`, `priority`, `status`, `recurring` (`-` if not recurring; otherwise `↻` plus `(last run YYYY-MM-DD)` from `last_run_date`, or `↻ (never run)` if recurring but `last_run_date` is absent). Use consistent column widths across all rows. If a task's `status` is `review`, append its `branch` field in parentheses after the status, e.g. `review (task/task-03-add-login-button)`, so the user knows what to merge.
 
 6. **Print a one-line footer** with counts and the sort applied, e.g.:
    ```

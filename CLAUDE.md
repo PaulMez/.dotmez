@@ -42,11 +42,11 @@ make retest         # reset-docker → run → sleep 3 → ssh
 
 Tasks live in `AI-Task.yml` at the repo root. The skills/commands that manage them follow these conventions:
 
-- **Statuses**: `ready` → `in-progress` → `done` (or `cancelled`). Recurring tasks cycle `ready` → `in-progress` → `ready` instead of ending at `done`.
-- **Fields**: `id`, `name`, `description`, `status`, `size` (small/medium/large), `priority` (low/medium/high), `dependencies` (list of IDs), `created_date`, `recurring` (bool, default false), `last_run_date` (set/updated by `/task-do` each time a recurring task completes a cycle)
+- **Statuses**: `ready` → `in-progress` → `done` (or `cancelled`). Recurring tasks cycle `ready` → `in-progress` → `ready` instead of ending at `done`. If `/task-do` is run with `--worktree`, a task ends at `review` instead of `done`/`ready` — work happened on a branch and is awaiting manual merge.
+- **Fields**: `id`, `name`, `description`, `status`, `size` (small/medium/large), `priority` (low/medium/high), `dependencies` (list of IDs), `created_date`, `recurring` (bool, default false), `last_run_date` (set/updated by `/task-do` each time a recurring task completes a cycle), `branch`/`worktree_path` (set by `/task-do --worktree` once a task reaches `review`)
 - `/task-add` — creates or updates a task, enriching the description from codebase context; pass `--recurring` to mark it as a repeatable audit/check
-- `/task-do` — picks and implements a task, auto-selecting highest-priority unblocked `ready` task if no ID given; recurring tasks cycle back to `ready` (with `last_run_date` stamped) instead of becoming `done`
-- `/task-clean` — archives `done`/`cancelled` tasks from `AI-Task.yml` into `Completed-AI-Task.yml`; recurring tasks waiting at `ready` are never archived, only if explicitly `cancelled` (or `done`)
+- `/task-do` — picks and implements a task, auto-selecting highest-priority unblocked `ready` task if no ID given; recurring tasks cycle back to `ready` (with `last_run_date` stamped) instead of becoming `done`. Two opt-in flags (both off by default): `--test` writes and runs test(s) covering the change, blocking completion until they pass; `--worktree` forces the work onto a new branch in a new git worktree (`.worktrees/<task-id>`) and leaves the task at `review` status with `branch`/`worktree_path` recorded, for manual merge later.
+- `/task-clean` — archives `done`/`cancelled` tasks from `AI-Task.yml` into `Completed-AI-Task.yml`; recurring tasks waiting at `ready` are never archived, only if explicitly `cancelled` (or `done`); tasks at `review` are never archived either
 - `/task-list` — lists tasks one per line (id, name, size, priority, status, recurring); supports `--sort created|priority|size|status`, `--order asc|desc`, and `--recurring` to show only recurring tasks
 
 The Claude Code versions live in `AI Utilities/.claude/skills/`; the OpenCode versions live in `AI Utilities/.config/opencode/commands/`. When updating skill logic, update both locations to keep them in sync.
