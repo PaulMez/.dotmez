@@ -3,8 +3,8 @@
 
 set -euo pipefail
 
-DOTMEZ_DIR="$(cd "$(dirname "$0")" && pwd)"
-SRC="$DOTMEZ_DIR/AI Utilities/.claude/skills"
+AI_UTILITIES_DIR="$(cd "$(dirname "$0")" && pwd)"
+SRC="$AI_UTILITIES_DIR/.claude/skills"
 DEST="$HOME/.claude/skills"
 
 if [[ ! -d "$SRC" ]]; then

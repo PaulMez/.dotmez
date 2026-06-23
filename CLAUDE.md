@@ -22,8 +22,8 @@ make retest         # reset-docker → run → sleep 3 → ssh
 ./backup_configs.sh        # snapshot $HOME dotfiles → configs/ with timestamp
 ./install_usuals.sh        # install common apt packages and tools
 ./zjstatus_install.sh      # install zellij status bar plugin
-./install-claude-skills.sh    # sync AI Utilities/.claude/skills/ → ~/.claude/skills/
-./install-opencode-commands.sh  # sync AI Utilities/.config/opencode/commands/ → ~/.config/opencode/commands/
+"AI Utilities/install-claude-skills.sh"      # sync AI Utilities/.claude/skills/ → ~/.claude/skills/
+"AI Utilities/install-opencode-commands.sh"  # sync AI Utilities/.config/opencode/commands/ → ~/.config/opencode/commands/
 ```
 
 ## Repo structure
