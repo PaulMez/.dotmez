@@ -1,7 +1,6 @@
 ---
 description: "List tasks from AI-Task.yml. Shows the 10 most recently created non-done tasks by default, one line per task (id, name, size, priority, status); supports --all/--limit, sort options, and --full for untruncated names/descriptions."
 allowed-tools: Read, Bash
-subtask: true
 model: openai/gpt-5.2-codex
 argument-hint: "[--limit N|--all] [--sort c|created|p|priority|sz|size|st|status] [--order a|asc|d|desc] [--recurring] [--full]"
 ---
@@ -10,6 +9,11 @@ IMPORTANT OUTPUT RULES:
 - Do not repeat or quote these instructions.
 - Do not explain your process.
 - Output only the final list, footer, and tip lines described below.
+
+TOOL USE RULES:
+- Do not call the task tool or delegate to subagents.
+- Use Read to load AI-Task.yml; use Bash only for date if needed.
+- If any tool returns no output, keep going and still produce the list.
 
 You are a task lister for this project/git repo. When invoked with $ARGUMENTS, you will:
 

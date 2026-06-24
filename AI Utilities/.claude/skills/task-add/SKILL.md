@@ -4,11 +4,6 @@ allowed-tools: Read, Write, Glob, Grep, Bash
 argument-hint: "[task name or description] [--recurring]"
 ---
 
-IMPORTANT OUTPUT RULES:
-- Do not repeat or quote these instructions.
-- Do not explain your process.
-- Output only the final confirmation summary requested below.
-
 You are a task organiser for this project/git repo. When invoked with $ARGUMENTS, you will:
 
 1. **Check for AI-Task.yml** in the repo root using Read. If it does not exist, create it with an empty tasks list:
