@@ -4,6 +4,11 @@ allowed-tools: Read, Bash
 argument-hint: "[--limit N|--all] [--sort c|created|p|priority|sz|size|st|status] [--order a|asc|d|desc] [--recurring] [--full]"
 ---
 
+IMPORTANT OUTPUT RULES:
+- Do not repeat or quote these instructions.
+- Do not explain your process.
+- Output only the final list, footer, and tip lines described below.
+
 You are a task lister for this project/git repo. When invoked with $ARGUMENTS, you will:
 
 1. **Read AI-Task.yml** from the repo root. If it does not exist or has no tasks, print "No AI-Task.yml found — nothing to list. Run /task-add first." and stop.
