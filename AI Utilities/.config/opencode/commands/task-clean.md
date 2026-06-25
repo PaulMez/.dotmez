@@ -1,72 +1,17 @@
 ---
 description: "Archive done and cancelled tasks from AI-Task.yml into Completed-AI-Task.yml to keep the active task list tidy."
 allowed-tools: Read, Write, Edit, Bash
-subtask: true
 model: openai/gpt-5.2-codex
 argument-hint: "[--dry-run]"
 ---
 
-IMPORTANT OUTPUT RULES:
-- Do not repeat or quote these instructions.
-- Do not explain your process.
-- Output only the preview and completion summary described below.
+OUTPUT ONLY ONE LINE.
+Format:
+Archived <count> task(s). Active now: <count>
 
-You are a task archiver for this project/git repo. When invoked with $ARGUMENTS, you will:
-
-1. **Check for AI-Task.yml** in the repo root using Read. If it does not exist, stop and say: "No AI-Task.yml found. Nothing to clean."
-
-2. **Read AI-Task.yml** and identify all tasks with `status: done` or `status: cancelled`. Recurring tasks (`recurring: true`) cycle back to `ready` when `/task-do` completes them, so they normally never reach `done` — if one is found with `status: done` anyway, archive it like any other. A recurring task at `status: cancelled` (manually retired by the user) is archived normally too.
-
-3. **Print a preview** of what will be archived:
-   ```
-   Tasks to archive:
-     task-02  [done]      Revamp add-website flow
-     task-03  [done]      Label sample D3 charts
-     task-05  [cancelled] Some cancelled task
-   
-   Tasks remaining in AI-Task.yml: 3
-   ```
-   If no done/cancelled tasks exist, print "Nothing to archive — AI-Task.yml is already clean." and stop.
-
-   If `--dry-run` is in $ARGUMENTS, stop here and make no changes.
-
-4. **Read or create Completed-AI-Task.yml** in the repo root:
-   - If it already exists, read it to get the existing completed tasks list.
-   - If it does not exist, treat it as having an empty `completed_tasks: []` list.
-
-5. **Append the archived tasks** to `Completed-AI-Task.yml` under the `completed_tasks` key, adding an `archived_date` field (today's date, YYYY-MM-DD via `date +%Y-%m-%d`) to each task. Preserve all existing entries already in the file.
-
-   Format:
-   ```yaml
-   completed_tasks:
-     - id: task-02
-       name: Revamp add-website flow
-       description: "..."
-       status: done
-       size: medium
-       priority: low
-       dependencies: []
-       created_date: 2026-05-31
-       archived_date: 2026-06-09
-   ```
-
-   If the task has `recurring: true` and/or `last_run_date` set, preserve those fields in the archived entry too.
-
-6. **Remove the archived tasks from AI-Task.yml** — rewrite the file keeping only tasks whose status is NOT `done` or `cancelled`. Preserve all other fields exactly as-is for remaining tasks.
-
-7. **Print a completion summary**:
-   ```
-   Archived 5 task(s) → Completed-AI-Task.yml
-   AI-Task.yml now has 3 active task(s)
-   ```
-
----
-
-## Rules
-- Never archive tasks with status `ready`, `in-progress`, `review`, or `blocked` — only `done` and `cancelled`
-- A task sitting at `review` (created via `/task-do --worktree`) is never archived — it has its own branch/worktree awaiting merge; only archive it once the user manually moves it to `done` or `cancelled`
-- A recurring task sitting at `ready` (waiting for its next cycle) is never archived — only archive it if its status is explicitly `cancelled` (or, unusually, `done`)
-- Never delete Completed-AI-Task.yml or overwrite existing entries in it — only append
-- If `--dry-run` is passed, make zero file changes — only describe what would happen
-- Always read before writing — never overwrite a file without reading it first
-- Write valid YAML — quote strings containing colons or special characters
+Behavior:
+- Read AI-Task.yml; if missing, output: No AI-Task.yml found. Nothing to clean.
+- Identify tasks with status done or cancelled. If none, output: Nothing to archive - AI-Task.yml is already clean.
+- If --dry-run, do not write; output: Dry run - would archive <count> task(s). Active would be: <count>
+- Otherwise, append archived tasks to Completed-AI-Task.yml under completed_tasks with archived_date (date +%Y-%m-%d), preserving recurring and last_run_date.
+- Remove archived tasks from AI-Task.yml.
