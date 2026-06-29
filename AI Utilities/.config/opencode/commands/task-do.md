@@ -11,6 +11,7 @@ Behavior:
 - Read AI-Task.yml; if missing, output: No AI-Task.yml found. Run /task-add first.
 - Select task by id or filters; if none, output: No eligible task found.
 - When no task id is supplied, do not select recurring tasks unless there are no non-recurring eligible tasks.
+- If selecting a recurring task by default, prefer ones never run (no last_run_date), then oldest last_run_date.
 - If --dry-run, output: Dry run - would work on <task-id>.
 - Mark task in-progress before work. If --worktree, create worktree and do code changes there.
 - Implement task. If --test, write and run tests, and do not finish unless passing.
