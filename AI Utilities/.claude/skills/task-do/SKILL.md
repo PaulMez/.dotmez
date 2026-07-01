@@ -29,7 +29,7 @@ Multiple filters combine: `--size small --priority high` finds small + high prio
 2. **Select the target task** based on $ARGUMENTS:
    - If a task ID like `task-03` is given → use that task. If not found, list available IDs and stop.
    - If filters like `--size` or `--priority` are given → filter tasks with `status: ready` matching all provided filters. If multiple match, pick the highest priority one (high > medium > low), then smallest size as tiebreaker. List all matches before proceeding.
-   - If blank → from all `status: ready` tasks, find those whose `dependencies` are all `status: done`. Among those, pick highest priority (high > medium > low), then smallest size as tiebreaker.
+   - If blank → from all `status: ready` tasks, find those whose `dependencies` are all `status: done`. Always prefer non-recurring tasks if any exist. If only recurring tasks are eligible, pick highest priority (high > medium > low), then oldest `last_run_date` (missing/never run first). Among non-recurring tasks, pick highest priority then smallest size as tiebreaker.
    - If no eligible task is found, print a clear message explaining why (e.g. "No ready tasks with no unmet dependencies found") and list blocked tasks with what they're waiting on.
 
 3. **Print a task summary** before doing anything:
