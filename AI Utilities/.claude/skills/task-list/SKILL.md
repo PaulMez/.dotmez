@@ -1,7 +1,7 @@
 ---
 description: "List tasks from AI-Task.yml. Shows the 10 most recently created non-done tasks by default, one line per task (id, name, size, priority, status); supports --all/--limit, sort options, and --full for untruncated names/descriptions."
 allowed-tools: Read, Bash
-argument-hint: "[--limit N|--all] [--sort c|created|p|priority|sz|size|st|status] [--order a|asc|d|desc] [--recurring] [--full]"
+argument-hint: "[--limit N|--all] [--sort c|created|p|priority|sz|size|st|status] [--order a|asc|d|desc] [--recurring|--no-recurring] [--full]"
 ---
 
 You are a task lister for this project/git repo. When invoked with $ARGUMENTS, you will:
@@ -12,6 +12,7 @@ You are a task lister for this project/git repo. When invoked with $ARGUMENTS, y
    - By default, exclude tasks with `status: done`.
    - If `--all` is given, include every task regardless of status (including `done` and `cancelled`).
    - If `--recurring` is given, additionally filter to only tasks with `recurring: true` (combine with the status filter above unless `--all` is also given).
+   - If `--no-recurring` is given, exclude tasks with `recurring: true`.
 
 3. **Determine sort field and order** from $ARGUMENTS. Sort fields accept the full name or the short prefix shown:
    - _(no `--sort`)_ → default to `created_date`, newest first (`desc`) — i.e., the most recently created tasks
