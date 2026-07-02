@@ -12,6 +12,7 @@ Behavior:
 - Select task by id or filters; if none, output: No eligible task found.
 - When no task id is supplied, always select a non-recurring eligible task if any exist.
 - If only recurring eligible tasks exist, select by highest priority first, then by oldest last_run_date (never run first).
+- Accept task id inputs as task-01, 01, or 1; normalize to task-XX with zero padding.
 - If --dry-run, output: Dry run - would work on <task-id>.
 - Mark task in-progress before work. If --worktree, create worktree and do code changes there.
 - Implement task. If --test, write and run tests, and do not finish unless passing.

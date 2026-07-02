@@ -17,6 +17,8 @@ export OLLAMA_HOST="0.0.0.0"
 
 alias olrag_env="cd /mnt/c/Users/Meza/ollama_rag && source olrag_env/bin/activate"
 alias p3="python3"
+alias cc=claude
+alias oc=opencode
 
 
 plugins=(

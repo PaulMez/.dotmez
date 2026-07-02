@@ -122,6 +122,8 @@ alias ttb="cd ~/aws/tinytales/tinytales_backend"
 alias askmez="python3 /Users/paulmez/aws/openai/askMez.py "
 alias MezTu_ssh="ssh meztu@192.168.1.41"
 alias MezTop_ssh="ssh meza@192.168.1.2 && wsl"
+alias cc=claude
+alias oc=opencode
 #source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 

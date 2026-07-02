@@ -66,7 +66,9 @@ alias egrep='egrep --color=auto'
 alias md='mkdir -p'
 alias rd=rmdir
 alias cdgr="cd ../../mnt/c/gitrepo"
-alias cc=clear
+alias c=clear
+alias cc=claude
+alias oc=opencode
 alias winssh='"/mnt/c/Windows/System32/OpenSSH/ssh.exe"'
 alias harlequin="harlequin --theme dracula --locale C" 
 #sudo du -h --max-depth=1 /usr/share/ | sort -hr | head -n 10
