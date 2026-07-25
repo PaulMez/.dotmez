@@ -79,11 +79,19 @@ micro 2.0.13, with the `filemanager` and `lsp` plugins installed via
 `setup-micro.sh`. Local overrides in `~/.config/micro/bindings.json` **[verified]**:
 
 ```json
-{ "Alt-/": "lua:comment.comment", "CtrlUnderscore": "lua:comment.comment" }
+{
+    "Alt-/": "lua:comment.comment",
+    "Alt-d": "command:definition",
+    "Alt-f": "command:format",
+    "Alt-k": "command:hover",
+    "Alt-r": "command:references",
+    "CtrlSpace": "command:lspcompletion",
+    "CtrlUnderscore": "lua:comment.comment"
+}
 ```
 
-Everything else is micro **[default]**, plus the `lsp` plugin's own **[default]**
-bindings (`Ctrl+Space`, `Alt+K/D/R/F`).
+The LSP keys are now bound explicitly rather than left to the plugin's defaults,
+so the table below is **[verified]** from config. Everything else is micro **[default]**.
 
 | Key | micro wants | zellij takes it for | Severity |
 |---|---|---|---|
@@ -98,7 +106,7 @@ bindings (`Ctrl+Space`, `Alt+K/D/R/F`).
 | `Ctrl+h` | Backspace | Move mode | 🟢 Low here — GNOME Terminal sends `^?` for Backspace, so the physical key still works |
 | `Alt+/` | Comment (yours) | *free* | ✅ No clash |
 
-### micro LSP plugin bindings
+### micro LSP plugin bindings **[verified]**
 
 | Key | micro LSP wants | zellij takes it for | Severity |
 |---|---|---|---|
@@ -204,30 +212,39 @@ to know is that copy/paste in a terminal is `Ctrl+Shift+C/V`, so micro's
 `install_aliases.sh` only adds/updates aliases by name, so whichever ran last
 wins silently. (`cc` also shadows the C compiler either way.)
 
-### 6b. ⚠️ `install_zellij_config.sh` points at a stale clone
+### 6b. ✅ `install_zellij_config.sh` pointed at a stale clone — fixed in `003997b`
 
-`install_zellij_config.sh:5` hardcodes `source_dir="$HOME/.dotmez/configs/zellij"`,
-but **[verified]**:
+Originally `install_zellij_config.sh:5` hardcoded
+`source_dir="$HOME/.dotmez/configs/zellij"`, but **[verified]**:
 
 - the working repo is at `~/gitrepo/.dotmez`
 - `~/.dotmez` is a *separate, real directory* — a stale clone stuck at commit
   `3c11c07` from 24 Aug 2025 (not a symlink; `readlink -f` resolves to itself)
 - `~/.dotmez/configs/zellij/` **does not exist** at that commit
 
-So the script cannot work on this machine — it would `cp` a nonexistent file.
-The `default_mode` change above was therefore deployed by copying directly from
-`~/gitrepo/.dotmez/configs/zellij/config.kdl`, bypassing the script.
+So the script could not work here — it would `cp` a nonexistent file. The
+`default_mode` change was deployed by copying directly from the working repo,
+bypassing the script.
 
-`copy_configs.sh` and `install_usuals.sh` should be checked for the same
-`$HOME/.dotmez` assumption. Either delete/refresh the stale clone, symlink
-`~/.dotmez` → `~/gitrepo/.dotmez`, or make the scripts resolve their own location.
+Fixed in `003997b`: `install_zellij_config.sh`, `copy_configs.sh` and
+`backup_configs.sh` now resolve paths relative to the script instead of
+`$HOME/.dotmez`; `install_usuals.sh` actually calls the zellij installer (it
+never did before); and the installer gained a backup + missing-source guard.
+
+The stale `~/.dotmez` clone still exists on disk and is no longer read by
+anything — deleting it would remove the last of the ambiguity.
 
 ---
 
 ## Options — remaining
 
-**Done:** `default_mode "locked"` (was option 1/2 territory — it fixes micro, nano,
-helix and zsh in one edit, at the cost of a modal `Ctrl+g`).
+**Done:**
+
+- `default_mode "locked"` — fixes micro, nano, helix and zsh in one edit, at the
+  cost of a modal `Ctrl+g` (`003997b`)
+- install scripts no longer read the stale `~/.dotmez` clone (`003997b`, see 6b)
+- micro LSP keys bound explicitly in `bindings.json` rather than left to plugin
+  defaults
 
 Still open:
 
@@ -243,8 +260,8 @@ Still open:
 
 4. **Resolve the `cc` alias** disagreement (6a).
 
-5. **Fix the `~/.dotmez` path bug** (6b) — highest practical priority, since it
-   means the install scripts silently don't do what they claim.
+5. **Delete the stale `~/.dotmez` clone** — nothing reads it now, but it is still
+   a loaded gun for any script or muscle-memory `cd` that assumes that path.
 
-Recommendation: **3 and 5** next. 3 is a one-liner and Locked mode has made the
-freeze reachable; 5 is the difference between the install scripts working and not.
+Recommendation: **3** next — it is a one-liner, and Locked mode has made the
+`Ctrl+s` freeze reachable at every shell prompt. Then **4** and **5** as cleanup.
