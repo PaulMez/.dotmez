@@ -32,8 +32,6 @@ echo "✅ Micro settings installed"
 echo "📦 Installing Micro plugins..."
 
 micro -plugin install filemanager || true
-micro -plugin install comment || true
-micro -plugin install linter || true
 
 echo "✅ Plugins installed"
 
