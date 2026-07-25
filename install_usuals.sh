@@ -281,6 +281,32 @@ for req in "${Reqs[@]}"; do
     fi
 done
 
+# Helix (Ubuntu only - PPA)
+if [ -r /etc/os-release ] && grep -qi '^ID=ubuntu' /etc/os-release; then
+    MezPrint "Installing Helix (Ubuntu PPA)"
+    case $user_type in
+        "root")
+            SUDO=""
+            ;;
+        *)
+            SUDO="sudo"
+            ;;
+    esac
+    if ! command -v add-apt-repository &> /dev/null; then
+        install_package "software-properties-common" "$PKG_MGR" "$user_type"
+    fi
+    if $SUDO add-apt-repository -y ppa:maveonair/helix-editor && $SUDO apt update -y; then
+        if ! install_package "helix" "$PKG_MGR" "$user_type"; then
+            failedInstalls+=("helix")
+        fi
+    else
+        echo "Failed to add the Helix PPA"
+        failedInstalls+=("helix-ppa")
+    fi
+else
+    MezPrint "Skipping Helix (not Ubuntu)"
+fi
+
 # Check if eza works, install if needed
 MezPrint "Checking eza..."
 EZA_WORKS=false
