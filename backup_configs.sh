@@ -6,8 +6,10 @@ source_dir="$HOME"
 # Specify the files to back up
 files=("~/.p10k.zsh" "~/.zshrc")
 
-# Specify the backup directory
-backup_dir="$HOME/.dotmez/configs"
+# Specify the backup directory, resolved relative to this script rather than a
+# hardcoded ~/.dotmez (a checkout may live elsewhere, e.g. ~/gitrepo/.dotmez)
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+backup_dir="$script_dir/configs"
 
 # Create backup directory if it doesn't exist
 mkdir -p "$backup_dir"

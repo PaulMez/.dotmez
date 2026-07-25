@@ -147,3 +147,8 @@ set_ohmyzsh_backg_color() {
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Truecolor for micro (monokai-dark is a hex-based colorscheme; without this
+# micro downsamples to 256 colors and the theme looks washed out)
+export COLORTERM=truecolor
+export MICRO_TRUECOLOR=1

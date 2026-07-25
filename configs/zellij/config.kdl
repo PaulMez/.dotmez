@@ -339,7 +339,11 @@ load_plugins {
 // Choose the mode that zellij uses when starting up.
 // Default: normal
 //
-// default_mode "locked"
+// Set to "locked" so zellij binds nothing but Ctrl+g on startup and every other
+// key passes through to the inner app (micro, nano, helix, zsh). Press Ctrl+g to
+// unlock into Normal mode and use zellij's bindings; Ctrl+g again to re-lock.
+// See KEYBINDING-CLASHES.md for the collisions this resolves.
+default_mode "locked"
 
 // Toggle enabling the mouse mode.
 // On certain configurations, or terminals this could

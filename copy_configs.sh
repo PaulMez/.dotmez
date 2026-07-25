@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Specify the source directory
-source_dir="$HOME/.dotmez/configs"
+# Specify the source directory, resolved relative to this script rather than a
+# hardcoded ~/.dotmez (a checkout may live elsewhere, e.g. ~/gitrepo/.dotmez)
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source_dir="$script_dir/configs"
 
 # Specify the destination directory
 destination_dir="$HOME"

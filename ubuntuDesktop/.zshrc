@@ -30,3 +30,8 @@ SAVEHIST=10000
 setopt share_history
 setopt inc_append_history
 setopt hist_ignore_dups hist_ignore_all_dups
+
+# Truecolor for micro (monokai-dark is a hex-based colorscheme; without this
+# micro downsamples to 256 colors and the theme looks washed out)
+export COLORTERM=truecolor
+export MICRO_TRUECOLOR=1

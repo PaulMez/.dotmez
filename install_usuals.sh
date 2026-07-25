@@ -465,6 +465,14 @@ chmod +x ~/.dotmez/copy_configs.sh
 ~/.dotmez/copy_configs.sh
 
 
+# Zellij config (config.kdl -> ~/.config/zellij). Ordering vs the zellij binary
+# install further down doesn't matter — this only writes a file zellij reads at
+# session start.
+MezPrint "Installing zellij config"
+chmod +x ~/.dotmez/install_zellij_config.sh
+~/.dotmez/install_zellij_config.sh || failedInstalls+=("zellij-config")
+
+
 # Installing Zellij
 MezPrint "Installing Zellij (from Binary)"
 INSTALL_DIR="/usr/local/bin"
