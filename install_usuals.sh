@@ -404,6 +404,36 @@ else
 fi
 
 
+# Fresh — terminal text editor / IDE (https://getfresh.dev/)
+# Upstream only publishes a piped install script and a .deb; there is no apt repo,
+# so this does not go through install_package.
+MezPrint "Installing Fresh (terminal IDE)"
+if curl -fsSL https://raw.githubusercontent.com/sinelaw/fresh/refs/heads/master/scripts/install.sh | sh; then
+    if ! command -v fresh &> /dev/null; then
+        # The installer may only put fresh on PATH for new shells.
+        echo "fresh installed but not yet on PATH in this shell"
+    fi
+else
+    echo "Failed to install Fresh."
+    failedInstalls+=("fresh")
+fi
+
+
+# Herdr — agent/session manager (https://herdr.dev/docs/install/)
+# Installs into versioned folders and puts the current one on PATH. Use
+# 'herdr update' to upgrade and 'herdr channel set preview|stable' to switch
+# release channels.
+MezPrint "Installing Herdr"
+if curl -fsSL https://herdr.dev/install.sh | sh; then
+    if ! command -v herdr &> /dev/null; then
+        echo "herdr installed but not yet on PATH in this shell"
+    fi
+else
+    echo "Failed to install Herdr."
+    failedInstalls+=("herdr")
+fi
+
+
 
 # #exa (new way)
 # MezPrint "Installing exa"
@@ -465,12 +495,23 @@ chmod +x ~/.dotmez/copy_configs.sh
 ~/.dotmez/copy_configs.sh
 
 
-# Zellij config (config.kdl -> ~/.config/zellij). Ordering vs the zellij binary
-# install further down doesn't matter — this only writes a file zellij reads at
-# session start.
+# Zellij config (config.kdl -> ~/.config/zellij). This runs BEFORE the zellij
+# binary install further down, which is fine: that block now only writes a stock
+# config when none exists, so it no longer clobbers what we deploy here.
 MezPrint "Installing zellij config"
 chmod +x ~/.dotmez/install_zellij_config.sh
 ~/.dotmez/install_zellij_config.sh || failedInstalls+=("zellij-config")
+
+
+# Fresh + Herdr configs. Both binaries are installed further up, so by this point
+# 'herdr server reload-config' has something to talk to if a server is running.
+MezPrint "Installing fresh config"
+chmod +x ~/.dotmez/install_fresh_config.sh
+~/.dotmez/install_fresh_config.sh || failedInstalls+=("fresh-config")
+
+MezPrint "Installing herdr config"
+chmod +x ~/.dotmez/install_herdr_config.sh
+~/.dotmez/install_herdr_config.sh || failedInstalls+=("herdr-config")
 
 
 # Installing Zellij
@@ -515,7 +556,17 @@ if [ $? -eq 0 ]; then
         echo "Zellij installation failed."
         failedInstalls+=("zellij")
     else
-        mkdir -p ~/.config/zellij && zellij setup --dump-config > ~/.config/zellij/config.kdl && echo 'default_shell "/usr/bin/zsh"' >> ~/.config/zellij/config.kdl
+        # Fallback config ONLY if nothing is there yet. install_zellij_config.sh
+        # runs earlier and deploys configs/zellij/config.kdl, which carries
+        # default_mode "locked" (see KEYBINDING-CLASHES.md) — an unconditional
+        # 'zellij setup --dump-config >' here used to overwrite it with the stock
+        # config on every fresh install, silently undoing that.
+        mkdir -p ~/.config/zellij
+        if [ ! -f ~/.config/zellij/config.kdl ]; then
+            echo "no zellij config found; writing stock defaults"
+            zellij setup --dump-config > ~/.config/zellij/config.kdl \
+                && echo 'default_shell "/usr/bin/zsh"' >> ~/.config/zellij/config.kdl
+        fi
         # echo "Zellij installed successfully!"
         # zellij --version
     fi

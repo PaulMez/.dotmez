@@ -1,0 +1,19 @@
+// Fresh config — https://getfresh.dev/docs/configuration/
+//
+// Deployed to ~/.config/fresh/config.json by install_fresh_config.sh.
+// Format is JSONC: comments and trailing commas are allowed.
+//
+// Fresh is designed around its built-in Settings UI, keybinding editor and theme
+// editor rather than hand-edited files, so this is intentionally near-empty — it
+// exists so a fresh machine starts on the same theme. Anything you change in the
+// Settings UI lands in this same file; run backup_configs.sh to pull it back into
+// the repo.
+//
+// Config is layered, user -> project -> session:
+//     ~/.config/fresh/config.json   (this file)
+//     .fresh/config.json            (per project, committed)
+//     .fresh/session.json           (per session, temporary)
+// A project can also run a startup script at .fresh/init.ts.
+{
+    "theme": "builtin://dracula",
+}

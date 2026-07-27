@@ -1,0 +1,29 @@
+# Herdr config — https://herdr.dev/docs/configuration/
+#
+# Deployed to ~/.config/herdr/config.toml by install_herdr_config.sh.
+# Herdr works with no config file at all and falls back to safe defaults for any
+# value it cannot parse, so this file is deliberately minimal: only keys that are
+# documented on the Configuration page are set here.
+#
+# To see every available option with its default:
+#     herdr --default-config
+# To confirm the path Herdr actually resolves on this machine:
+#     herdr --help
+# To reload after editing, without restarting:
+#     herdr server reload-config
+
+onboarding = false
+
+[terminal]
+default_shell = "zsh"
+
+[keys]
+# NOTE: ctrl+b is Herdr's documented default prefix, and it is also zellij's
+# Tmux-mode switch. They only collide when zellij is unlocked — configs/zellij
+# sets default_mode "locked", so while locked every key reaches Herdr untouched.
+# If you run Herdr inside an unlocked zellij, change this to a free key.
+# See KEYBINDING-CLASHES.md.
+prefix = "ctrl+b"
+
+[theme]
+name = "catppuccin"

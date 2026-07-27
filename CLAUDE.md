@@ -20,8 +20,14 @@ make retest         # reset-docker → run → sleep 3 → ssh
 # Deploy dotfiles to the live system
 ./copy_configs.sh          # copy configs/ → $HOME (zshrc, p10k.zsh)
 ./backup_configs.sh        # snapshot $HOME dotfiles → configs/ with timestamp
+./backup_app_configs.sh    # pull ~/.config/<app>/ configs back into configs/ (fresh, herdr)
 ./install_usuals.sh        # install common apt packages and tools
 ./zjstatus_install.sh      # install zellij status bar plugin
+
+# Per-app config deployment (configs/<app>/ → ~/.config/<app>/, with backup)
+./install_zellij_config.sh
+./install_fresh_config.sh
+./install_herdr_config.sh
 "AI Utilities/install-claude-skills.sh"      # sync AI Utilities/.claude/skills/ → ~/.claude/skills/
 "AI Utilities/install-opencode-commands.sh"  # sync AI Utilities/.config/opencode/commands/ → ~/.config/opencode/commands/
 ```
@@ -31,6 +37,9 @@ make retest         # reset-docker → run → sleep 3 → ssh
 | Path | Purpose |
 |---|---|
 | `configs/` | Shell configs deployed to `$HOME` (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
+| `configs/zellij/` | `config.kdl` → `~/.config/zellij/` |
+| `configs/fresh/` | `config.json` (JSONC) → `~/.config/fresh/` — [Fresh](https://getfresh.dev/) terminal IDE |
+| `configs/herdr/` | `config.toml` → `~/.config/herdr/` — [Herdr](https://herdr.dev/) agent/session manager |
 | `ubuntuDesktop/` | Ubuntu-specific shell configs (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
 | `macos/` | macOS-specific shell configs + alias dump |
 | `AI Utilities/.claude/skills/` | Claude Code custom skills (`task-add`, `task-do`, `task-clean`, `task-list`) |
