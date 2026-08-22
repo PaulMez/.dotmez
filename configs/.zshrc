@@ -25,17 +25,21 @@ function gitcap() {
   git add . && git commit -m "$1" && git push
 }
 
-function cat() {
-    # Check if batcat is installed
-    if command -v batcat &> /dev/null; then
-        # If installed, use batcat with all provided arguments
-        batcat "$@"
-    else
-        # If not installed, show a message and fall back to default cat
-        echo "batcat is not installed. Falling back to default cat command."
-        command cat "$@"
-    fi
-}
+# Determine which cat command to use (bat preferred; Debian/Ubuntu names it batcat)
+# Check once at startup - no performance overhead on each command
+if command -v bat &> /dev/null; then
+    CAT_CMD="bat"
+elif command -v batcat &> /dev/null; then
+    CAT_CMD="batcat"
+fi
+
+# Only wrap cat when a bat is actually present. With no wrapper, cat stays the
+# real cat, so nothing can print to stdout and corrupt a redirect or pipeline.
+if [[ -n "$CAT_CMD" ]]; then
+    function cat() {
+        "$CAT_CMD" "$@"
+    }
+fi
 
 
 
