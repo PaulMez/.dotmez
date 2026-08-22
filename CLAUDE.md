@@ -21,8 +21,10 @@ make retest         # reset-docker → run → sleep 3 → ssh
 ./copy_configs.sh          # copy configs/ → $HOME (zshrc, p10k.zsh)
 ./backup_configs.sh        # snapshot $HOME dotfiles → configs/ with timestamp
 ./backup_app_configs.sh    # pull ~/.config/<app>/ configs back into configs/ (fresh, herdr)
-./install_usuals.sh        # install common apt packages and tools
+./install_usuals.sh        # install common apt packages and tools (Debian/Ubuntu/Fedora/openSUSE)
+./omarchy_install_usuals.sh  # Arch/Omarchy variant: pacman + yay, no side-loaded binaries
 ./zjstatus_install.sh      # install zellij status bar plugin
+./omarchy_setup_fingerprint.sh  # wire an enrolled fingerprint into PAM (sudo/polkit/lock)
 
 # Per-app config deployment (configs/<app>/ → ~/.config/<app>/, with backup)
 ./install_zellij_config.sh
