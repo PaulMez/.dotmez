@@ -25,6 +25,7 @@ make retest         # reset-docker → run → sleep 3 → ssh
 ./omarchy_install_usuals.sh  # Arch/Omarchy variant: pacman + yay, no side-loaded binaries
 ./zjstatus_install.sh      # install zellij status bar plugin
 ./omarchy_setup_fingerprint.sh  # wire an enrolled fingerprint into PAM (sudo/polkit/lock)
+./omarchy_laptop_setup.sh       # apply display scaling + text sizing (--dry-run to preview)
 
 # Per-app config deployment (configs/<app>/ → ~/.config/<app>/, with backup)
 ./install_zellij_config.sh
@@ -40,6 +41,7 @@ make retest         # reset-docker → run → sleep 3 → ssh
 |---|---|
 | `configs/` | Shell configs deployed to `$HOME` (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
 | `configs/zellij/` | `config.kdl` → `~/.config/zellij/` |
+| `configs/hypr/` | `monitors.lua` → `~/.config/hypr/` — per-output scales, `GDK_SCALE`, `QT_FONT_DPI` |
 | `configs/fresh/` | `config.json` (JSONC) → `~/.config/fresh/` — [Fresh](https://getfresh.dev/) terminal IDE |
 | `configs/herdr/` | `config.toml` → `~/.config/herdr/` — [Herdr](https://herdr.dev/) agent/session manager |
 | `ubuntuDesktop/` | Ubuntu-specific shell configs (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
