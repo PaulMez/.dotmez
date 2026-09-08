@@ -94,16 +94,32 @@ patch_line() {
     ok "  $label -> $TERM_FONT_SIZE"
 }
 
+# install_hypr_file <basename> <success-note>
+# Copies configs/hypr/<basename> -> ~/.config/hypr/<basename> with backup.
+install_hypr_file() {
+    local name="$1" note="$2"
+    local src="$script_dir/configs/hypr/$name"
+    local dst="$HOME/.config/hypr/$name"
+
+    if [ ! -f "$src" ]; then
+        echo "error: $src not found" >&2
+        exit 1
+    fi
+
+    if [ -f "$dst" ] && cmp -s "$src" "$dst"; then
+        skip "$name (identical)"
+    elif $DRY_RUN; then
+        info "  would install $src -> $dst"
+    else
+        mkdir -p "$(dirname "$dst")"
+        backup_file "$dst"
+        cp "$src" "$dst"
+        ok "  $name installed ($note)"
+    fi
+}
+
 # ---- 1. Hyprland monitors + env ---------------------------------------------
 info "\n== Hyprland display config =="
-
-src="$script_dir/configs/hypr/monitors.lua"
-dst="$HOME/.config/hypr/monitors.lua"
-
-if [ ! -f "$src" ]; then
-    echo "error: $src not found" >&2
-    exit 1
-fi
 
 # monitors.lua names specific outputs. Warn rather than fail: the file still
 # has a catch-all rule, so an unknown machine gets sane defaults.
@@ -113,16 +129,8 @@ if command -v hyprctl >/dev/null 2>&1 && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}"
     fi
 fi
 
-if [ -f "$dst" ] && cmp -s "$src" "$dst"; then
-    skip "monitors.lua (identical)"
-elif $DRY_RUN; then
-    info "  would install $src -> $dst"
-else
-    mkdir -p "$(dirname "$dst")"
-    backup_file "$dst"
-    cp "$src" "$dst"
-    ok "  monitors.lua installed (GDK_SCALE=1, QT_FONT_DPI=$QT_FONT_DPI, per-output scales)"
-fi
+install_hypr_file "monitors.lua" "GDK_SCALE=1, QT_FONT_DPI=$QT_FONT_DPI, per-output scales"
+install_hypr_file "input.lua" "Rival 300 sensitivity, flat accel"
 
 # ---- 2. GTK text scaling -----------------------------------------------------
 info "\n== GTK text scaling =="
