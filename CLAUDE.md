@@ -27,6 +27,7 @@ make retest         # reset-docker → run → sleep 3 → ssh
 ./omarchy_setup_fingerprint.sh  # wire an enrolled fingerprint into PAM (sudo/polkit/lock)
 ./omarchy_laptop_setup.sh       # apply display scaling + text sizing (--dry-run to preview)
 
+./omarchy_install_branding.sh   # "mezarchy" branding: screensaver text, boot/login logo, idle timers, wallpapers (--dry-run, --all-themes)
 # Per-app config deployment (configs/<app>/ → ~/.config/<app>/, with backup)
 ./install_zellij_config.sh
 ./install_fresh_config.sh
@@ -45,6 +46,7 @@ make retest         # reset-docker → run → sleep 3 → ssh
 | `configs/fresh/` | `config.json` (JSONC) → `~/.config/fresh/` — [Fresh](https://getfresh.dev/) terminal IDE |
 | `configs/herdr/` | `config.toml` → `~/.config/herdr/` — [Herdr](https://herdr.dev/) agent/session manager |
 | `ubuntuDesktop/` | Ubuntu-specific shell configs (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
+| `configs/omarchy/branding/` | `screensaver.txt`, `mezarchy-logo.png`, `backgrounds/*.png` → `~/.config/omarchy/branding/` — Omarchy "mezarchy" branding |
 | `macos/` | macOS-specific shell configs + alias dump |
 | `AI Utilities/.claude/skills/` | Claude Code custom skills (`task-add`, `task-do`, `task-clean`, `task-list`) |
 | `AI Utilities/.config/opencode/commands/` | OpenCode slash commands (`task-add`, `task-do`, `task-clean`, `task-list`) |
@@ -65,5 +67,45 @@ Tasks live in `AI-Task.yml` at the repo root. The skills/commands that manage th
 The Claude Code versions live in `AI Utilities/.claude/skills/`; the OpenCode versions live in `AI Utilities/.config/opencode/commands/`. When updating skill logic, update both locations to keep them in sync.
 
 ## Docker test environment
+## Alias management
+
+Aliases live inline in `configs/.zshrc` — that file is the source of truth. There is
+no separate alias file. `install_aliases.sh` parses `alias name=...` lines out of the
+repo copy and a target `.zshrc`, then sorts them into four buckets:
+
+- **missing** — in the repo, not on the target → added by `--apply`
+- **changed** — in both, definitions differ → target is overwritten by `--apply`
+- **extra** — on the target, not in the repo → reported only, never removed
+- **in sync** — identical
+
+Default mode is `--check`: reports drift, writes nothing, exits 1 when out of sync
+(so it works as a pre-commit gate). `--apply` backs the target up to
+`<file>.bak.<timestamp>` first and inserts new aliases after the last existing alias
+line, not at EOF. `--dest` is repeatable for comparing the `ubuntuDesktop/` and
+`macos/` variants against `configs/`.
+
+Comparison is deliberately file-based rather than against the live `alias` builtin —
+the builtin would flood the "extra" bucket with oh-my-zsh plugin aliases (see
+`macos/macosaliasall.txt`). The trade-off is that an alias defined ad-hoc in a running
+shell is invisible to the script until it is written to a file.
+
+Caveat when syncing to `macos/.zshrc`: the `ls`/`ll`/`lt`/`ltt` aliases in
+`configs/.zshrc` reference `$LS_CMD`, which is set by the eza/exa detection block
+earlier in that file. Copying them to a `.zshrc` without that block yields broken
+aliases, so check before applying across variants.
+
+## Omarchy branding ("mezarchy")
+
+`omarchy_install_branding.sh` reproduces the custom branding applied to the live
+Omarchy machine on 2026-09-14. Files live in `configs/omarchy/branding/` and mirror
+`~/.config/omarchy/branding/` one-to-one, so `backup_app_configs.sh` pulls them back.
+
+- **Screensaver** — `screensaver.txt` is the MEZARCHY block-letter art `omarchy-screensaver` renders via ttfx. Copied straight in.
+- **Boot splash + login screen** — `mezarchy-logo.png` (920x190) is *not* copied into `/usr/share` by hand. The script calls `omarchy-plymouth-set '#1a1b26' '#ffffff' <logo>`, which rebuilds both the Plymouth theme and the SDDM theme atomically as root. Picking a theme's own unlock screen from the Omarchy menu (Style > Unlock) overwrites this; re-run the script to restore it. `omarchy-plymouth-reset` returns to stock.
+- **Idle timers** — only `idle.screensaver` (120s, default 150) and `idle.lock` (300s) are patched in `~/.config/omarchy/shell.json` with jq; the rest of that file is left alone so Omarchy's bar defaults are not pinned by the repo. Never use `omarchy-refresh-shell` to reload it: in Omarchy, "refresh" means *reset to package defaults*. The script uses `omarchy-shell shell reloadConfig`.
+- **Wallpapers** — Omarchy only lists user backgrounds per theme (`~/.config/omarchy/backgrounds/<theme>/`). The one real copy of each `backgrounds/*.png` goes under `branding/`, and each theme folder gets symlinks (all Omarchy pickers use `find -L`). Default is the current theme; `--all-themes` links every installed theme.
+
+Both `omarchy_install_branding.sh` and `omarchy_setup_fingerprint.sh` need a real TTY for sudo.
+
 
 The container runs Ubuntu 22.04 with XFCE4 desktop, SSH (port 2222), and XRDP (port 3389). Root password is `pass123`. Connect via `ssh root@localhost -p 2222` or an RDP client at `localhost:3389`.

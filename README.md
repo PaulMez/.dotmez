@@ -50,6 +50,10 @@ ssh-keygen -f "/home/meza/.ssh/known_hosts" -R "[localhost]:2222"
 	
 ## install script(s)
 	- to install common apps and copy from repo to associated  folders
+	- `omarchy_install_branding.sh` — mezarchy branding for Omarchy: screensaver
+	  text, Plymouth boot splash + SDDM login logo, idle timers, wallpapers
+	  (`configs/omarchy/branding/`). `--dry-run` previews, `--all-themes` links
+	  the wallpapers into every theme instead of just the current one.
 
 each of the above for MacOS / Ubuntu / Other
 

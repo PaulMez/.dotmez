@@ -17,6 +17,15 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 targets=(
     "fresh/config.json"
     "herdr/config.toml"
+    # Omarchy "mezarchy" branding — deployed by omarchy_install_branding.sh.
+    # The wallpapers are listed by name on purpose: only the real copies under
+    # branding/ are tracked, never the per-theme symlinks Omarchy scans.
+    "omarchy/branding/screensaver.txt"
+    "omarchy/branding/mezarchy-logo.png"
+    "omarchy/branding/backgrounds/mezarchy-minimal.png"
+    "omarchy/branding/backgrounds/mezarchy-moonrise.png"
+    "omarchy/branding/backgrounds/mezarchy-neon-city.png"
+    "omarchy/branding/backgrounds/mezarchy-terminal.png"
     # Uncomment to also track these; both already have install scripts.
     # "zellij/config.kdl"
     # "micro/settings.json"
