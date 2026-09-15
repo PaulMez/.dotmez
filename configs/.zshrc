@@ -68,6 +68,7 @@ alias ttb="cd ~/aws/tinytales/tinytales_backend"
 alias askmez="python3 /Users/paulmez/aws/openai/askMez.py "
 alias MezTu_ssh="ssh meztu@192.168.1.41"
 alias MezTop_ssh="ssh meza@192.168.1.2 && wsl"
+alias sshmb="ssh mezbuntuware@mezbuntuware"
 alias olrag_env="cd /mnt/c/Users/Meza/ollama_rag && source olrag_env/bin/activate"
 alias p3="python3"
 alias grep='grep --color=auto'

@@ -20,14 +20,15 @@ make retest         # reset-docker → run → sleep 3 → ssh
 # Deploy dotfiles to the live system
 ./copy_configs.sh          # copy configs/ → $HOME (zshrc, p10k.zsh)
 ./backup_configs.sh        # snapshot $HOME dotfiles → configs/ with timestamp
+./install_aliases.sh       # compare aliases in configs/.zshrc vs ~/.zshrc (--apply to sync)
 ./backup_app_configs.sh    # pull ~/.config/<app>/ configs back into configs/ (fresh, herdr)
 ./install_usuals.sh        # install common apt packages and tools (Debian/Ubuntu/Fedora/openSUSE)
 ./omarchy_install_usuals.sh  # Arch/Omarchy variant: pacman + yay, no side-loaded binaries
 ./zjstatus_install.sh      # install zellij status bar plugin
 ./omarchy_setup_fingerprint.sh  # wire an enrolled fingerprint into PAM (sudo/polkit/lock)
 ./omarchy_laptop_setup.sh       # apply display scaling + text sizing (--dry-run to preview)
-
 ./omarchy_install_branding.sh   # "mezarchy" branding: screensaver text, boot/login logo, idle timers, wallpapers (--dry-run, --all-themes)
+
 # Per-app config deployment (configs/<app>/ → ~/.config/<app>/, with backup)
 ./install_zellij_config.sh
 ./install_fresh_config.sh
@@ -45,8 +46,8 @@ make retest         # reset-docker → run → sleep 3 → ssh
 | `configs/hypr/` | `monitors.lua` → `~/.config/hypr/` — per-output scales, `GDK_SCALE`, `QT_FONT_DPI` |
 | `configs/fresh/` | `config.json` (JSONC) → `~/.config/fresh/` — [Fresh](https://getfresh.dev/) terminal IDE |
 | `configs/herdr/` | `config.toml` → `~/.config/herdr/` — [Herdr](https://herdr.dev/) agent/session manager |
-| `ubuntuDesktop/` | Ubuntu-specific shell configs (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
 | `configs/omarchy/branding/` | `screensaver.txt`, `mezarchy-logo.png`, `backgrounds/*.png` → `~/.config/omarchy/branding/` — Omarchy "mezarchy" branding |
+| `ubuntuDesktop/` | Ubuntu-specific shell configs (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
 | `macos/` | macOS-specific shell configs + alias dump |
 | `AI Utilities/.claude/skills/` | Claude Code custom skills (`task-add`, `task-do`, `task-clean`, `task-list`) |
 | `AI Utilities/.config/opencode/commands/` | OpenCode slash commands (`task-add`, `task-do`, `task-clean`, `task-list`) |
@@ -66,7 +67,6 @@ Tasks live in `AI-Task.yml` at the repo root. The skills/commands that manage th
 
 The Claude Code versions live in `AI Utilities/.claude/skills/`; the OpenCode versions live in `AI Utilities/.config/opencode/commands/`. When updating skill logic, update both locations to keep them in sync.
 
-## Docker test environment
 ## Alias management
 
 Aliases live inline in `configs/.zshrc` — that file is the source of truth. There is
@@ -107,5 +107,6 @@ Omarchy machine on 2026-09-14. Files live in `configs/omarchy/branding/` and mir
 
 Both `omarchy_install_branding.sh` and `omarchy_setup_fingerprint.sh` need a real TTY for sudo.
 
+## Docker test environment
 
 The container runs Ubuntu 22.04 with XFCE4 desktop, SSH (port 2222), and XRDP (port 3389). Root password is `pass123`. Connect via `ssh root@localhost -p 2222` or an RDP client at `localhost:3389`.

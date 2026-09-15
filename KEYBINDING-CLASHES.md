@@ -202,15 +202,20 @@ to know is that copy/paste in a terminal is `Ctrl+Shift+C/V`, so micro's
 
 ## 6. Non-keybinding clashes found along the way
 
-### 6a. `cc` alias disagreement
+### 6a. ✅ `cc` alias disagreement — resolved
 
 | Item | Repo says | Live `~/.zshrc` says |
 |---|---|---|
 | `alias cc` | `alias cc=claude` (`configs/.zshrc:70`, `ubuntuDesktop/.zshrc:20`) | `alias cc=clear` (`~/.zshrc:64`) |
 
-**[verified]** — the repo and the live machine disagree about what `cc` does, and
-`install_aliases.sh` only adds/updates aliases by name, so whichever ran last
-wins silently. (`cc` also shadows the C compiler either way.)
+**[verified]** — the repo and the live machine disagreed about what `cc` does, and
+`install_aliases.sh` only added/updated aliases by name, so whichever ran last
+won silently. (`cc` also shadows the C compiler either way.)
+
+Both sides now agree on `alias cc=claude`, and `clear` is reached via `alias c=clear`.
+The silent-overwrite problem is also fixed: `install_aliases.sh` now defaults to a
+read-only `--check` mode that prints every differing alias with both definitions
+side by side, and only writes when `--apply` is passed.
 
 ### 6b. ✅ `install_zellij_config.sh` pointed at a stale clone — fixed in `003997b`
 
