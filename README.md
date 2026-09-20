@@ -54,6 +54,12 @@ ssh-keygen -f "/home/meza/.ssh/known_hosts" -R "[localhost]:2222"
 	  text, Plymouth boot splash + SDDM login logo, idle timers, wallpapers
 	  (`configs/omarchy/branding/`). `--dry-run` previews, `--all-themes` links
 	  the wallpapers into every theme instead of just the current one.
+	- `mezarchy_wallpapers.py` — regenerates those wallpapers (3840x2160 PNG from
+	  hand-built SVG, tokyo-night palette). `--list` shows the scenes; pass names
+	  to render a subset. Needs `rsvg-convert` (librsvg).
+	- `mezarchy_bg.sh` — swap the wallpaper between a chosen few: `rotate on [MIN]`
+	  (systemd user timer, default every 15 min) or `workspace on` (one wallpaper
+	  per Hyprland workspace). Picks live in `configs/omarchy/branding/mezarchy-bg.conf`.
 
 each of the above for MacOS / Ubuntu / Other
 

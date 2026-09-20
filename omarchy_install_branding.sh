@@ -18,6 +18,9 @@
 #      symlinks to it. Every Omarchy picker walks with `find -L`, so links show
 #      up in the switcher, bg-next, and thumbnail caching. Default is the
 #      current theme only; --all-themes links every installed theme.
+#   5. ~/.config/omarchy/branding/mezarchy-bg.conf -- which wallpapers
+#      mezarchy_bg.sh rotates through / maps to workspaces. Copied only; run
+#      `mezarchy_bg.sh rotate on` or `mezarchy_bg.sh workspace on` to enable.
 #
 # The splash/login logo is NOT copied into /usr/share by hand. Omarchy owns
 # those files (package omarchy-settings) and ships a tool for exactly this:
@@ -104,7 +107,7 @@ backup_file() {
     fi
 }
 
-for f in screensaver.txt mezarchy-logo.png; do
+for f in screensaver.txt mezarchy-logo.png mezarchy-bg.conf; do
     [ -f "$source_dir/$f" ] || fail "$source_dir/$f not found"
 done
 command -v jq >/dev/null || fail "jq is required (pacman -S jq)"
@@ -112,7 +115,7 @@ command -v jq >/dev/null || fail "jq is required (pacman -S jq)"
 # ---- 1. branding files ------------------------------------------------------
 info "${GREEN}Branding files -> $branding_dir${RESET}"
 $DRY_RUN || mkdir -p "$branding_dir"
-for f in screensaver.txt mezarchy-logo.png; do
+for f in screensaver.txt mezarchy-logo.png mezarchy-bg.conf; do
     src="$source_dir/$f"
     dst="$branding_dir/$f"
     if [ -f "$dst" ] && cmp -s "$src" "$dst"; then

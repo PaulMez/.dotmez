@@ -22,10 +22,16 @@ targets=(
     # branding/ are tracked, never the per-theme symlinks Omarchy scans.
     "omarchy/branding/screensaver.txt"
     "omarchy/branding/mezarchy-logo.png"
+    "omarchy/branding/mezarchy-bg.conf"
     "omarchy/branding/backgrounds/mezarchy-minimal.png"
     "omarchy/branding/backgrounds/mezarchy-moonrise.png"
     "omarchy/branding/backgrounds/mezarchy-neon-city.png"
     "omarchy/branding/backgrounds/mezarchy-terminal.png"
+    "omarchy/branding/backgrounds/mezarchy-rain.png"
+    "omarchy/branding/backgrounds/mezarchy-skyline.png"
+    "omarchy/branding/backgrounds/mezarchy-circuit.png"
+    "omarchy/branding/backgrounds/mezarchy-horizon.png"
+    "omarchy/branding/backgrounds/mezarchy-panes.png"
     # Uncomment to also track these; both already have install scripts.
     # "zellij/config.kdl"
     # "micro/settings.json"
