@@ -1,0 +1,77 @@
+#!/bin/bash
+#
+# Omarchy's SUPER+K keybindings menu with the personal bindings from
+# ~/.config/hypr/bindings.lua pinned to the top, most recently added first.
+#
+# Omarchy's omarchy-menu-keybindings orders the list with a hard-coded
+# priority table, so anything personal lands in the alphabetical middle. This
+# wrapper reuses that script's functions (everything above its main block) for
+# collecting, caching and dispatching bindings, and only changes the order:
+#
+#   1. every o.bind()/o.bind_toggle() description found in bindings.lua,
+#      bottom of the file first (newest appended binding on top)
+#   2. the stock list, in Omarchy's own order
+#
+# Usage: mez-menu-keybindings [--print|-p]
+#
+# Falls back to the stock menu if the packaged script changes shape.
+
+set -o pipefail
+
+menu="$(command -v omarchy-menu-keybindings 2>/dev/null)" || {
+    echo "omarchy-menu-keybindings not found; is this an Omarchy machine?" >&2
+    exit 1
+}
+menu="$(readlink -f "$menu")"
+bindings="${MEZ_BINDINGS:-$HOME/.config/hypr/bindings.lua}"
+
+# Load the packaged functions without running its main block.
+# shellcheck disable=SC1090
+source <(sed '/^if \[\[ \$1 == "--print"/,$d' "$menu")
+if ! declare -F output_binding_records >/dev/null || ! declare -F dispatch_binding >/dev/null; then
+    exec "$menu" "$@"
+fi
+
+# Descriptions of the personal bindings, last line of the file first.
+personal_descriptions() {
+    [[ -r $bindings ]] || return 0
+    grep -E '^[[:space:]]*o\.bind(_toggle)?\(' "$bindings" |
+        sed -E 's/^[[:space:]]*o\.bind(_toggle)?\("[^"]*",[[:space:]]*"([^"]+)".*/\2/;t;d' |
+        tac
+}
+
+# Records are "<display>\t<dispatcher>\t<arg>"; display is "<keys> → <description>".
+reorder_records() {
+    awk -F '\t' '
+        NR == FNR { if ($0 != "" && !($0 in rank)) rank[$0] = ++n; next }
+        {
+            desc = $1
+            sub(/^.* → /, "", desc)
+            if (desc in rank) {
+                pinned[rank[desc]] = pinned[rank[desc]] (pinned[rank[desc]] == "" ? "" : "\n") $0
+            } else {
+                rest[++r] = $0
+            }
+        }
+        END {
+            for (i = 1; i <= n; i++) if (i in pinned) print pinned[i]
+            for (i = 1; i <= r; i++) print rest[i]
+        }
+    ' <(personal_descriptions) -
+}
+
+records="$(output_binding_records | reorder_records)"
+
+if [[ $1 == "--print" || $1 == "-p" ]]; then
+    cut -f1 <<<"$records"
+    exit 0
+fi
+
+selection=$(cut -f1 <<<"$records" |
+    omarchy-menu-select 'Keybindings' -- --width 800 --height 500)
+if [[ -n $selection ]]; then
+    record=$(awk -F '\t' -v selection="$selection" '$1 == selection { print; exit }' <<<"$records")
+    dispatcher=$(cut -f2 <<<"$record")
+    arg=$(cut -f3- <<<"$record")
+    dispatch_binding "$dispatcher" "$arg"
+fi
