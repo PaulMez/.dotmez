@@ -27,7 +27,7 @@ make retest         # reset-docker → run → sleep 3 → ssh
 ./zjstatus_install.sh      # install zellij status bar plugin
 ./omarchy_setup_fingerprint.sh  # wire an enrolled fingerprint into PAM (sudo/polkit/lock)
 ./omarchy_laptop_setup.sh       # apply display scaling + text sizing (--dry-run to preview)
-./omarchy_install_dev_layout.sh # SUPER+SHIFT+L dev layout: configs/bin/mez-dev-layout → ~/.local/bin + binding appended to ~/.config/hypr/bindings.lua (--dry-run, --remove)
+./omarchy_install_dev_layout.sh # dev layout: configs/bin/mez-dev-layout → ~/.local/bin + SUPER+SHIFT+L/K/J (4/3/2 terminals) appended to ~/.config/hypr/bindings.lua (--dry-run, --remove)
 ./omarchy_install_branding.sh   # "mezarchy" branding: screensaver text, boot/login logo, idle timers, wallpapers (--dry-run, --all-themes)
 ./mezarchy_wallpapers.py [scene ...]  # regenerate the mezarchy wallpapers from SVG (--list, --out DIR, --svg); needs rsvg-convert
 ./mezarchy_bg.sh rotate on [MIN]      # systemd user timer cycling the wallpaper through ROTATE in mezarchy-bg.conf (default 15 min)

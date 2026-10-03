@@ -1,8 +1,7 @@
 #!/bin/bash
 # mez-dev-layout [N]: N terminals (default 4) across the top half, browser across
-# the bottom half, on the current workspace. SUPER+SHIFT+L runs the default in
-# ~/.config/hypr/bindings.lua; "mez-dev-layout 2" / "mez-dev-layout 3" give the
-# narrower variants (bind them the same way if wanted).
+# the bottom half, on the current workspace. ~/.config/hypr/bindings.lua binds
+# SUPER+SHIFT+L (4), SUPER+SHIFT+K (3) and SUPER+SHIFT+J (2).
 #
 # - Terminal/browser come from Omarchy's own launchers (xdg-terminal-exec and
 #   omarchy-launch-browser), so whatever you've configured is what opens.
@@ -15,7 +14,7 @@
 # If more of our terminals exist on the workspace than N, only the first N are
 # laid out; the rest are left where they are (never closed, they may hold work).
 #
-# Remove: delete this file and the o.bind line in ~/.config/hypr/bindings.lua.
+# Remove: delete this file and the o.bind lines in ~/.config/hypr/bindings.lua.
 
 set -u
 

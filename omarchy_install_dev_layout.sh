@@ -1,14 +1,15 @@
 #!/bin/bash
 #
-# Install the "dev layout" shortcut on an Omarchy machine: SUPER+SHIFT+L opens
-# N terminals (default 4) across the top half of the current workspace and the
-# browser across the bottom half.
+# Install the "dev layout" shortcuts on an Omarchy machine: terminals across
+# the top half of the current workspace, the browser across the bottom half.
 #
 #   configs/bin/mez-dev-layout  -> ~/.local/bin/mez-dev-layout
-#   o.bind("SUPER + SHIFT + L")   -> appended to ~/.config/hypr/bindings.lua
+#   SUPER+SHIFT+L  4 terminals  \
+#   SUPER+SHIFT+K  3 terminals   > appended to ~/.config/hypr/bindings.lua
+#   SUPER+SHIFT+J  2 terminals  /
 #
 # bindings.lua is PATCHED, not replaced: it holds other personal bindings that
-# are not tracked here, so only the one marked line is added (or removed).
+# are not tracked here, so only the marked lines are added (or removed).
 # The script uses whatever terminal and browser Omarchy is configured with.
 #
 # Flags:
@@ -20,9 +21,13 @@
 
 set -euo pipefail
 
-BIND_KEY="SUPER + SHIFT + L"
-BIND_LINE='o.bind("SUPER + SHIFT + L", "Dev layout", "mez-dev-layout")'
-BIND_COMMENT='-- Dev layout: 4 terminals across the top half, browser across the bottom half (~/.local/bin/mez-dev-layout).'
+BIND_COMMENT='-- Dev layout: terminals across the top half, browser across the bottom half (~/.local/bin/mez-dev-layout).'
+BIND_LINES=(
+    'o.bind("SUPER + SHIFT + L", "Dev layout", "mez-dev-layout")'
+    'o.bind("SUPER + SHIFT + K", "Dev layout (3)", "mez-dev-layout 3")'
+    'o.bind("SUPER + SHIFT + J", "Dev layout (2)", "mez-dev-layout 2")'
+)
+BIND_KEYS="SUPER+SHIFT+L/K/J"
 
 GREEN="\033[0;32m"
 YELLOW="\033[0;33m"
@@ -50,6 +55,13 @@ info() { printf "%b\n" "$1"; }
 ok()   { printf "${GREEN}%s${RESET}\n" "$1"; }
 warn() { printf "${YELLOW}warning: %s${RESET}\n" "$1" >&2; }
 skip() { printf "skip: %s\n" "$1"; }
+
+# Escape a literal string for use as a sed address.
+sed_lit() { printf '%s' "$1" | sed 's/[][\\.*^$/]/\\&/g'; }
+# Key name ("SUPER + SHIFT + L") out of an o.bind line.
+bind_key() { printf '%s' "$1" | sed -E 's/^o\.bind\("([^"]+)".*/\1/'; }
+# Command (last quoted argument) out of an o.bind line.
+bind_cmd() { printf '%s' "$1" | sed -E 's/.*, "([^"]+)"\)$/\1/'; }
 
 backup_file() {
     local target="$1"
@@ -86,19 +98,25 @@ if $REMOVE; then
     else
         skip "$dst (not installed)"
     fi
-    if [ -f "$bindings" ] && grep -qF "$BIND_LINE" "$bindings"; then
+    present=false
+    for line in "${BIND_LINES[@]}"; do
+        [ -f "$bindings" ] && grep -qF "$line" "$bindings" && present=true
+    done
+    if $present; then
         if $DRY_RUN; then
-            info "  would remove the $BIND_KEY binding from $bindings"
+            info "  would remove the $BIND_KEYS bindings from $bindings"
         else
             backup_file "$bindings"
-            # Drop the bind line, its comment, and the blank line that precedes them.
-            sed -i -e "/^$(printf '%s' "$BIND_COMMENT" | sed 's/[][\\.*^$/]/\\&/g')\$/d" \
-                   -e "/^$(printf '%s' "$BIND_LINE" | sed 's/[][\\.*^$/]/\\&/g')\$/d" "$bindings"
+            # Drop the bind lines and their comment, then any trailing blank lines.
+            sed -i -e "/^$(sed_lit "$BIND_COMMENT")\$/d" "$bindings"
+            for line in "${BIND_LINES[@]}"; do
+                sed -i -e "/^$(sed_lit "$line")\$/d" "$bindings"
+            done
             sed -i -e ':a' -e '/^\n*$/{$d;N;ba' -e '}' "$bindings"
-            ok "  $BIND_KEY binding removed"
+            ok "  $BIND_KEYS bindings removed"
         fi
     else
-        skip "$BIND_KEY binding (not present)"
+        skip "$BIND_KEYS bindings (not present)"
     fi
     info "\n== Apply =="
     reload_hyprland
@@ -128,17 +146,31 @@ fi
 info "\n== Hyprland binding =="
 
 if [ ! -f "$bindings" ]; then
-    warn "$bindings not found; is this an Omarchy machine? Skipping the binding."
-elif grep -qF "$BIND_LINE" "$bindings"; then
-    skip "$BIND_KEY binding (already present)"
-elif grep -qE "^[^-]*\"$BIND_KEY\"" "$bindings"; then
-    warn "$BIND_KEY is already bound to something else in $bindings; not adding ours."
-elif $DRY_RUN; then
-    info "  would append the $BIND_KEY binding to $bindings"
+    warn "$bindings not found; is this an Omarchy machine? Skipping the bindings."
 else
-    backup_file "$bindings"
-    printf '\n%s\n%s\n' "$BIND_COMMENT" "$BIND_LINE" >> "$bindings"
-    ok "  $BIND_KEY -> mez-dev-layout"
+    # Work out which of our lines are missing; refuse a key someone else already uses.
+    missing=()
+    for line in "${BIND_LINES[@]}"; do
+        key="$(bind_key "$line")"
+        if grep -qF "$line" "$bindings"; then
+            skip "$key binding (already present)"
+        elif grep -qE "^[^-]*\"$key\"" "$bindings"; then
+            warn "$key is already bound to something else in $bindings; not adding ours."
+        else
+            missing+=("$line")
+        fi
+    done
+    if [ "${#missing[@]}" -gt 0 ]; then
+        if $DRY_RUN; then
+            info "  would append ${#missing[@]} binding(s) to $bindings"
+        else
+            backup_file "$bindings"
+            # One comment block for ours; add it only the first time.
+            grep -qF -- "$BIND_COMMENT" "$bindings" || printf '\n%s\n' "$BIND_COMMENT" >> "$bindings"
+            printf '%s\n' "${missing[@]}" >> "$bindings"
+            for line in "${missing[@]}"; do ok "  $(bind_key "$line") -> $(bind_cmd "$line")"; done
+        fi
+    fi
 fi
 
 # ---- 3. apply ------------------------------------------------------------------
@@ -148,8 +180,8 @@ reload_hyprland
 cat <<'NOTES'
 
 Notes:
-  - SUPER+SHIFT+L lays out 4 terminals. For 2 or 3, run `mez-dev-layout 2` or
-    `mez-dev-layout 3`, or bind them the same way in ~/.config/hypr/bindings.lua.
+  - SUPER+SHIFT+L = 4 terminals, SUPER+SHIFT+K = 3, SUPER+SHIFT+J = 2.
+    Any count 1-8 works from a shell: `mez-dev-layout N`.
   - Re-running the shortcut reuses the windows already on the workspace; it
     never closes a terminal.
   - Undo everything with:  ./omarchy_install_dev_layout.sh --remove
