@@ -60,6 +60,10 @@ ssh-keygen -f "/home/meza/.ssh/known_hosts" -R "[localhost]:2222"
 	- `mezarchy_bg.sh` — swap the wallpaper between a chosen few: `rotate on [MIN]`
 	  (systemd user timer, default every 15 min) or `workspace on` (one wallpaper
 	  per Hyprland workspace). Picks live in `configs/omarchy/branding/mezarchy-bg.conf`.
+	- `omarchy_install_dev_layout.sh` — SUPER+SHIFT+L dev layout on Omarchy: installs
+	  `configs/bin/mez-dev-layout` to `~/.local/bin` and appends the binding to
+	  `~/.config/hypr/bindings.lua`. `mez-dev-layout 2|3` for fewer terminals.
+	  `--dry-run` previews, `--remove` undoes.
 
 each of the above for MacOS / Ubuntu / Other
 

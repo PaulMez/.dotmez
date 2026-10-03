@@ -1,0 +1,124 @@
+#!/bin/bash
+# mez-dev-layout [N]: N terminals (default 4) across the top half, browser across
+# the bottom half, on the current workspace. SUPER+SHIFT+L runs the default in
+# ~/.config/hypr/bindings.lua; "mez-dev-layout 2" / "mez-dev-layout 3" give the
+# narrower variants (bind them the same way if wanted).
+#
+# - Terminal/browser come from Omarchy's own launchers (xdg-terminal-exec and
+#   omarchy-launch-browser), so whatever you've configured is what opens.
+# - Windows are identified by class (terminals get their own app-id) and by a
+#   Hyprland tag (browser), never by PID or sleep guesses. Re-running reuses the
+#   windows already on the workspace and only creates what is missing.
+# - Geometry is computed from the focused monitor each run, so it follows
+#   resolution/scale changes. Nothing is hard-coded in pixels.
+#
+# If more of our terminals exist on the workspace than N, only the first N are
+# laid out; the rest are left where they are (never closed, they may hold work).
+#
+# Remove: delete this file and the o.bind line in ~/.config/hypr/bindings.lua.
+
+set -u
+
+TERM_CLASS="com.mez.devlayout"     # ghostty needs a reverse-DNS app-id
+BROWSER_TAG="mezlayout-browser"
+TERMINALS=${1:-4}
+WAIT_TICKS=100                      # 100 x 0.1s = 10s max wait per launch
+
+fail() { command -v notify-send >/dev/null && notify-send "Dev layout" "$*"; echo "mez-dev-layout: $*" >&2; exit 1; }
+dsp()  { local out; out=$(hyprctl dispatch "$1") || true; [[ $out == ok ]] || echo "mez-dev-layout: $1 -> $out" >&2; }
+
+# From the shortcut there is no terminal, so errors go to a log instead.
+LOG="${XDG_RUNTIME_DIR:-/tmp}/mez-dev-layout.log"
+[[ -t 2 ]] || exec 2>>"$LOG"
+echo "$(date '+%F %T') start: terminals=$TERMINALS ppid=$PPID ($(ps -o comm= -p $PPID 2>/dev/null))" >>"$LOG"
+
+# One run at a time, so a held-down shortcut can't launch twice. Every launch
+# below closes fd 9 (9>&-) so the apps don't inherit, and keep, the lock.
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/mez-dev-layout.lock"
+flock -n 9 || { echo "mez-dev-layout: another run is in progress" >&2; exit 0; }
+
+command -v jq >/dev/null || fail "jq is required"
+[[ $TERMINALS =~ ^[1-8]$ ]] || fail "usage: mez-dev-layout [1-8]  (number of terminals, default 4)"
+
+# --- where: focused monitor + its active workspace -------------------------
+mon=$(hyprctl -j monitors | jq -c '.[] | select(.focused)')
+[[ -n $mon ]] || fail "no focused monitor"
+ws=$(jq -r '.activeWorkspace.id' <<<"$mon")
+
+clients() { hyprctl -j clients; }
+# Our terminals on this workspace, left to right (so re-runs keep their order).
+our_terms()   { clients | jq -r --argjson ws "$ws" --arg c "$TERM_CLASS" \
+  '[.[] | select(.workspace.id == $ws and .class == $c and .mapped)] | sort_by(.at[0], .at[1]) | .[].address'; }
+our_browser() { clients | jq -r --argjson ws "$ws" --arg t "$BROWSER_TAG" \
+  '[.[] | select(.workspace.id == $ws and .mapped and (.tags // [] | any(ltrimstr("+") | startswith($t))))] | .[0].address // empty'; }
+
+# wait_for <count> <jq-filter>: poll until the filter yields >= count windows on this workspace.
+wait_for() {
+  local want=$1 filter=$2 n i
+  for ((i = 0; i < WAIT_TICKS; i++)); do
+    n=$(clients | jq -r --argjson ws "$ws" "[.[] | select(.workspace.id == \$ws and .mapped) | select($filter)] | length")
+    (( n >= want )) && return 0
+    sleep 0.1
+  done
+  return 1
+}
+
+# --- terminals: launch only the missing ones -------------------------------
+mapfile -t terms < <(our_terms)
+missing=$(( TERMINALS - ${#terms[@]} ))
+if (( missing > 0 )); then
+  for ((i = 0; i < missing; i++)); do
+    setsid uwsm-app -- xdg-terminal-exec --app-id="$TERM_CLASS" --title="dev" >/dev/null 2>&1 9>&- &
+  done
+  wait_for "$TERMINALS" ".class == \"$TERM_CLASS\"" || fail "terminals did not appear in time"
+  mapfile -t terms < <(our_terms)
+fi
+
+# --- browser: launch if missing, find it by address diff, then tag it -------
+browser=$(our_browser)
+if [[ -z $browser ]]; then
+  before=$(clients | jq -r '.[].address' | sort)
+  omarchy-launch-browser >/dev/null 2>&1 9>&-
+  # The new window is whatever appears on this workspace that is not one of our terminals.
+  for ((i = 0; i < WAIT_TICKS; i++)); do
+    browser=$(comm -13 <(echo "$before") <(clients | jq -r --argjson ws "$ws" --arg c "$TERM_CLASS" \
+      '.[] | select(.workspace.id == $ws and .mapped and .class != $c) | .address' | sort) | head -1)
+    [[ -n $browser ]] && break
+    sleep 0.1
+  done
+  [[ -n $browser ]] || fail "browser window did not appear in time"
+  dsp "hl.dsp.window.tag({ tag = \"+$BROWSER_TAG\", window = \"address:$browser\" })"
+fi
+
+# --- geometry (logical pixels, computed from the monitor) -------------------
+read -r mx my mw mh rl rt rr rb < <(jq -r '[.x, .y, (.width / .scale | round), (.height / .scale | round), .reserved[0], .reserved[1], .reserved[2], .reserved[3]] | @sh' <<<"$mon" | tr -d "'")
+# getoption returns {"int":N} for sizes and {"css":"t r b l"} for gaps; take the first number either way.
+opt() { hyprctl -j getoption "$1" | jq -r '(.int // .css // 0 | tostring) | split(" ")[0] | tonumber | floor'; }
+gap_out=$(opt general:gaps_out); gap_in=$(opt general:gaps_in); border=$(opt general:border_size)
+edge=$(( gap_out + border ))          # monitor edge -> window edge (gaps_out + border)
+gap=$(( 2 * gap_in + 2 * border ))    # window -> window (two gaps_in + two borders), like tiling
+
+ux=$(( mx + rl + edge ));  uy=$(( my + rt + edge ))
+uw=$(( mw - rl - rr - 2 * edge ));  uh=$(( mh - rt - rb - 2 * edge ))
+top_h=$(( (uh - gap) / 2 ));  bot_h=$(( uh - gap - top_h ))
+term_w=$(( (uw - (TERMINALS - 1) * gap) / TERMINALS ))
+
+# --- place: float (if not already), size, move -----------------------------
+place() {  # place <address> <x> <y> <w> <h>
+  local a=$1
+  if [[ $(clients | jq -r --arg a "$a" '.[] | select(.address == $a) | .floating') != true ]]; then
+    dsp "hl.dsp.window.float({ action = \"toggle\", window = \"address:$a\" })"
+  fi
+  dsp "hl.dsp.window.resize({ x = $4, y = $5, relative = false, window = \"address:$a\" })"
+  dsp "hl.dsp.window.move({ x = $2, y = $3, relative = false, window = \"address:$a\" })"
+}
+
+for ((i = 0; i < TERMINALS - 1; i++)); do
+  place "${terms[i]}" $(( ux + i * (term_w + gap) )) "$uy" "$term_w" "$top_h"
+done
+# Last terminal absorbs integer-division slack so the row reaches the right edge.
+place "${terms[TERMINALS-1]}" $(( ux + (TERMINALS - 1) * (term_w + gap) )) "$uy" $(( uw - (TERMINALS - 1) * (term_w + gap) )) "$top_h"
+place "$browser" "$ux" $(( uy + top_h + gap )) "$uw" "$bot_h"
+
+dsp "hl.dsp.focus({ window = \"address:${terms[0]}\" })"
+echo "$(date '+%F %T') done: ws=$ws terminals=${#terms[@]} browser=$browser" >>"$LOG"

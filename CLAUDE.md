@@ -27,6 +27,7 @@ make retest         # reset-docker → run → sleep 3 → ssh
 ./zjstatus_install.sh      # install zellij status bar plugin
 ./omarchy_setup_fingerprint.sh  # wire an enrolled fingerprint into PAM (sudo/polkit/lock)
 ./omarchy_laptop_setup.sh       # apply display scaling + text sizing (--dry-run to preview)
+./omarchy_install_dev_layout.sh # SUPER+SHIFT+L dev layout: configs/bin/mez-dev-layout → ~/.local/bin + binding appended to ~/.config/hypr/bindings.lua (--dry-run, --remove)
 ./omarchy_install_branding.sh   # "mezarchy" branding: screensaver text, boot/login logo, idle timers, wallpapers (--dry-run, --all-themes)
 ./mezarchy_wallpapers.py [scene ...]  # regenerate the mezarchy wallpapers from SVG (--list, --out DIR, --svg); needs rsvg-convert
 ./mezarchy_bg.sh rotate on [MIN]      # systemd user timer cycling the wallpaper through ROTATE in mezarchy-bg.conf (default 15 min)
@@ -48,6 +49,7 @@ make retest         # reset-docker → run → sleep 3 → ssh
 | `configs/` | Shell configs deployed to `$HOME` (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
 | `configs/zellij/` | `config.kdl` → `~/.config/zellij/` |
 | `configs/hypr/` | `monitors.lua` → `~/.config/hypr/` — per-output scales, `GDK_SCALE`, `QT_FONT_DPI` |
+| `configs/bin/` | `mez-dev-layout` → `~/.local/bin/` — N terminals (default 4) across the top half of the workspace, browser across the bottom; floats and sizes windows from the focused monitor's geometry via `hyprctl dispatch` Lua dispatchers |
 | `configs/fresh/` | `config.json` (JSONC) → `~/.config/fresh/` — [Fresh](https://getfresh.dev/) terminal IDE |
 | `configs/herdr/` | `config.toml` → `~/.config/herdr/` — [Herdr](https://herdr.dev/) agent/session manager |
 | `configs/omarchy/branding/` | `screensaver.txt`, `mezarchy-logo.png`, `backgrounds/*.png` → `~/.config/omarchy/branding/` — Omarchy "mezarchy" branding |
