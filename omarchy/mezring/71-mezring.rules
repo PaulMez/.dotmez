@@ -1,0 +1,21 @@
+# mezring: udev rules for the two Bluetooth rings + uinput for the daemon.
+# Install:
+#   sudo cp 71-mezring.rules /etc/udev/rules.d/ && sudo cp uinput.conf /etc/modules-load.d/mezring.conf
+#   sudo modprobe uinput && sudo udevadm control --reload && sudo udevadm trigger
+#
+# Numbered 71 so it runs AFTER 70-power-switch.rules, which is what tags input
+# devices for systemd-logind. The J09 sends the Consumer "Sleep" usage (KEY_SLEEP)
+# from one of its buttons; logind acts on that and SUSPENDS THE LAPTOP. Dropping
+# the power-switch tag makes logind ignore the rings entirely.
+
+# J09 ring  (BLE, Zhuhai Jieli, VID 248A PID 8251)
+SUBSYSTEM=="hidraw", KERNELS=="0005:248A:8251.*", TAG+="uaccess"
+SUBSYSTEM=="input",  KERNELS=="0005:248A:8251.*", TAG+="uaccess", TAG-="power-switch"
+
+# Anko ring (BR/EDR, spoofs Apple Wireless Keyboard, VID 05AC PID 022C)
+SUBSYSTEM=="hidraw", KERNELS=="0005:05AC:022C.*", TAG+="uaccess"
+SUBSYSTEM=="input",  KERNELS=="0005:05AC:022C.*", TAG+="uaccess", TAG-="power-switch"
+
+# /dev/uinput: lets the logged-in user create the virtual mouse/keyboard that
+# mezringd uses for smooth scrolling, pointer motion and synthetic keys.
+KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess"

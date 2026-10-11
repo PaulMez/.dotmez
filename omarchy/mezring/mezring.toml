@@ -1,0 +1,72 @@
+# mezring configuration.  Copy to ~/.config/mezring/mezring.toml and edit.
+#
+# Events and action syntax: see the top of tools/mezringd.py.
+# Modes are profiles; switch with "mode:<name>" or "mode:next". The first mode
+# listed is the default unless start_mode says otherwise.
+
+[general]
+start_mode = "scroll"      # or per ring: { j09 = "scroll", anko = "hypr" }; the daemon updates this as you switch
+mode_notify = true        # desktop notification on mode change
+hold_every = 2            # run hold_fwd/hold_back actions every Nth frame (frames are 30 ms apart)
+pointer_speed = 0.25      # pointer pixels per pad count
+pointer_x_sign = 1        # flip to -1 if the pointer moves the wrong way
+pointer_y_sign = -1       # pad "up" = pointer up
+pad_scroll_divisor = 60   # pad counts per scroll notch when pad_move = "scrollpad"
+pad_scroll_sign = -1
+
+# Fallbacks used in every mode unless the mode overrides them.
+[common.j09]
+btn3 = "mode:next"            # next mode for THIS ring; "mode:all:scroll" or "mode:anko:hypr" target others
+
+[common.anko]
+btn2_long = "mode:next"
+
+# ---------------------------------------------------------------- mode: scroll
+# Rings behave like a scroll wheel + media remote. Good for reading and video.
+[modes.scroll.j09]
+swipe_fwd = "scroll:-3"            # pad swipe forward  -> scroll down
+swipe_back = "scroll:3"            # pad swipe back     -> scroll up
+hold_fwd = "scroll:-0.5"           # button held        -> smooth scroll down
+hold_back = "scroll:0.5"
+tap = "key:KEY_SPACE"              # play/pause in most players and browsers
+btn1 = "key:KEY_PLAYPAUSE"
+btn2 = "key:KEY_NEXTSONG"
+
+[modes.scroll.anko]
+btn1 = "scroll:-3"                 # (firmware: swipe up)   -> scroll down
+btn3 = "scroll:3"                  # (firmware: swipe down) -> scroll up
+btn2 = "key:KEY_SPACE"             # (firmware: tap)
+btn1_long = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"    # repeats while held
+btn3_long = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+
+# ---------------------------------------------------------------- mode: pointer
+# J09 pad drives the mouse. Tap = left click. Buttons = right click / back.
+[modes.pointer.j09]
+pad_move = "pointer"
+tap = "click:left"
+btn1 = "click:right"
+btn2 = "key:KEY_LEFTALT+KEY_LEFT"  # browser back
+swipe_fwd = "scroll:-2"
+swipe_back = "scroll:2"
+hold_fwd = "scroll:-0.5"
+hold_back = "scroll:0.5"
+
+# (no [modes.pointer.anko]: the Anko has no pad, so it simply does not take part in pointer mode)
+
+# ---------------------------------------------------------------- mode: hypr
+# Drive Hyprland: workspaces, windows, launcher.
+[modes.hypr.j09]
+swipe_fwd = "hypr:workspace e+1"     # e+1/e-1 cycle through OPEN workspaces only (+1/-1 would create new ones)
+swipe_back = "hypr:workspace e-1"
+tap = "hypr:cyclenext"
+btn1 = "hypr:fullscreen 1"
+btn2 = "hypr:killactive"
+hold_fwd = "scroll:-0.5"
+hold_back = "scroll:0.5"
+
+[modes.hypr.anko]
+btn1 = "hypr:cyclenext"              # short: cycle windows forward (daemon-implemented, Hyprland's own ignores direction)
+btn3 = "hypr:cycleprev"              # short: cycle windows backward
+btn2 = "hypr:fullscreen 1"           # short: maximize toggle
+btn1_long = "hypr:workspace e+1"     # long: next open workspace (repeats every 0.5 s while held)
+btn3_long = "hypr:workspace e-1"     # long: previous open workspace

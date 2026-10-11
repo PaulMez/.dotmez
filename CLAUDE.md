@@ -34,6 +34,7 @@ make retest         # reset-docker → run → sleep 3 → ssh
 ./mezarchy_bg.sh rotate on [MIN]      # systemd user timer cycling the wallpaper through ROTATE in mezarchy-bg.conf (default 15 min)
 ./mezarchy_bg.sh workspace on         # systemd user service giving each Hyprland workspace its own wallpaper (WORKSPACE map in the conf)
 ./mezarchy_bg.sh next|prev|random|set NAME|list|status   # one-shots; `rotate off` / `workspace off` remove the units
+omarchy/mezring/install.sh      # Bluetooth ring driver (mezringd) + Omarchy bar plugin; --no-sudo / --no-plugin; uninstall.sh [--purge]
 
 # Per-app config deployment (configs/<app>/ → ~/.config/<app>/, with backup)
 ./install_zellij_config.sh
@@ -53,6 +54,7 @@ make retest         # reset-docker → run → sleep 3 → ssh
 | `configs/bin/` | `mez-dev-layout` → `~/.local/bin/` — N terminals (default 4) across the top half of the workspace, browser across the bottom; floats and sizes windows from the focused monitor's geometry via `hyprctl dispatch` Lua dispatchers. `mez-menu-keybindings` → `~/.local/bin/` — SUPER+K replacement that `source`s the packaged `omarchy-menu-keybindings` minus its main block (so collection, caching and dispatch stay Omarchy's), then reorders: every `o.bind()` description in `~/.config/hypr/bindings.lua`, bottom of the file first, then the stock list. Omarchy's own ordering is a hard-coded priority table in that script, which is why personal bindings otherwise land mid-list |
 | `configs/fresh/` | `config.json` (JSONC) → `~/.config/fresh/` — [Fresh](https://getfresh.dev/) terminal IDE |
 | `configs/herdr/` | `config.toml` → `~/.config/herdr/` — [Herdr](https://herdr.dev/) agent/session manager |
+| `omarchy/mezring/` | Userspace driver + Omarchy bar plugin for two cheap Bluetooth "TikTok rings" (J09, Anko). Self-contained project with its own `README.md`/`RECON.md`; see the "mezring" section below |
 | `configs/omarchy/branding/` | `screensaver.txt`, `mezarchy-logo.png`, `backgrounds/*.png` → `~/.config/omarchy/branding/` — Omarchy "mezarchy" branding |
 | `ubuntuDesktop/` | Ubuntu-specific shell configs (`.zshrc`, `.p10k.zsh`, `.bashrc`) |
 | `macos/` | macOS-specific shell configs + alias dump |
@@ -114,6 +116,26 @@ Omarchy machine on 2026-09-14. Files live in `configs/omarchy/branding/` and mir
 - **Swapping wallpapers** — `mezarchy_bg.sh` reads `~/.config/omarchy/branding/mezarchy-bg.conf` (repo: `configs/omarchy/branding/mezarchy-bg.conf`, a bash-sourced file with a `ROTATE` list, `ROTATE_MINUTES`, and a `WORKSPACE[id]=name` map). `rotate on` writes `~/.config/systemd/user/mezarchy-bg-rotate.{service,timer}`; `workspace on` writes `mezarchy-bg-workspace.service`, which listens on Hyprland's `.socket2.sock` via `socat` for `workspacev2`/`focusedmonv2` events. Turning one on turns the other off. Every change goes through `omarchy-theme-bg-set`, so Omarchy's reveal transition and its own switcher keep working. Omarchy's background plugin paints one image across all monitors, so per-workspace follows the last-focused monitor. The systemd user manager on Omarchy already has `HYPRLAND_INSTANCE_SIGNATURE`/`WAYLAND_DISPLAY` in its environment, which is why plain user units work. Note `hyprctl dispatch` on this Hyprland build takes Lua: `hyprctl dispatch 'hl.dsp.focus({ workspace = "3" })'`.
 
 Both `omarchy_install_branding.sh` and `omarchy_setup_fingerprint.sh` need a real TTY for sudo.
+
+## mezring (Bluetooth ring driver)
+
+`omarchy/mezring/` is a self-contained project that was folded into this repo on
+2026-10-11 (it used to live at `~/gitrpo/mezring`). Read its `README.md` for usage and
+`RECON.md` for the reverse-engineering notes; the short version:
+
+- `tools/mezringd.py` (stdlib-only Python >= 3.11) reads raw HID reports from the rings,
+  grabs their evdev nodes, and runs the mapped actions via uinput / `hyprctl` / `wtype`.
+  It runs as the user service `mezringd` and listens on `$XDG_RUNTIME_DIR/mezring.sock`.
+- `install.sh` is idempotent: udev rules + uinput (sudo), `~/.config/mezring/mezring.toml`
+  (only created if missing; `mezring.example.toml` is always refreshed), the systemd user
+  unit, and the `mez.rings` bar plugin in `~/.config/omarchy/plugins/`. The unit's
+  `ExecStart` runs the script **in place from this repo**, so moving the folder means
+  re-running `install.sh` (or `install.sh --no-sudo`) to rewrite the unit. `install.sh`
+  ends with `omarchy restart shell`, which briefly flickers the bar.
+- `71-mezring.rules` is the live udev rule; `70-mezring.rules` is the earlier version
+  kept for reference and is removed from `/etc` by the installer.
+- Live config is edited from the bar panel, or by hand followed by
+  `systemctl --user kill -s HUP mezringd`.
 
 ## Docker test environment
 

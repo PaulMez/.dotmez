@@ -1,0 +1,10 @@
+# mezring: give the logged-in seat user read/write ACLs on the rings' raw HID
+# and evdev nodes, so a userspace driver can run without root.
+# Install:  sudo cp 70-mezring.rules /etc/udev/rules.d/ && sudo udevadm control --reload && sudo udevadm trigger
+#
+# J09 ring  (BLE, Telink TLSR8251, VID 248A PID 8251)
+SUBSYSTEM=="hidraw", KERNELS=="0005:248A:8251.*", TAG+="uaccess"
+SUBSYSTEM=="input",  KERNELS=="0005:248A:8251.*", TAG+="uaccess"
+# Anko ring (BR/EDR, spoofs Apple Wireless Keyboard, VID 05AC PID 022C)
+SUBSYSTEM=="hidraw", KERNELS=="0005:05AC:022C.*", TAG+="uaccess"
+SUBSYSTEM=="input",  KERNELS=="0005:05AC:022C.*", TAG+="uaccess"

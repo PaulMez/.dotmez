@@ -1,0 +1,19 @@
+# systemd user unit for mezringd.
+# Install:
+#   mkdir -p ~/.config/mezring && cp mezring.toml ~/.config/mezring/
+#   cp mezringd.service ~/.config/systemd/user/ && systemctl --user daemon-reload
+#   systemctl --user enable --now mezringd
+# Logs: journalctl --user -u mezringd -f
+[Unit]
+Description=mezring - userspace driver for the J09 and Anko Bluetooth rings
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/gitrpo/.dotmez/omarchy/mezring/tools/mezringd.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
